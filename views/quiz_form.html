@@ -1,0 +1,33 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 id="quiz-form-title" class="text-2xl font-bold text-gray-700">Add New Quiz</h2>
+        <button class="back-to-quizzes text-violet-600 font-semibold hover:underline">&larr; Back to Quiz Menu</button>
+    </div>
+    <form id="quiz-form" class="space-y-4">
+        <input type="hidden" name="id" id="quiz-id-input">
+        <div>
+            <label class="block font-medium text-gray-700">Status</label>
+            <select name="status" id="quiz-status-select" class="w-full p-3 border rounded-lg shadow-sm input-field">
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+            </select>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Topic ID</label>
+            <input type="number" name="topic_id" id="quiz-topic-id-input" class="w-full p-3 border rounded-lg shadow-sm input-field" required>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Quiz Title</label>
+            <input type="text" name="quiz_title" id="quiz-title-input" class="w-full p-3 border rounded-lg shadow-sm input-field" required>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Host(s)</label>
+            <input type="text" name="host" id="quiz-host-input" class="w-full p-3 border rounded-lg shadow-sm input-field" placeholder="e.g., ErroL and ESHA" required>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Short Description</label>
+            <input type="text" name="description" id="quiz-description-input" class="w-full p-3 border rounded-lg shadow-sm input-field" required>
+        </div>
+       <button type="button" id="submit-quiz-btn" class="w-full py-3 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors">Submit Quiz</button>
+    </form>
+</div>

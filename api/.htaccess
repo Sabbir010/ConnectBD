@@ -1,0 +1,13 @@
+# START CORS CONFIGURATION
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "https://friendify.gt.tc"
+    Header set Access-Control-Allow-Credentials "true"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, X-Requested-With, Origin"
+</IfModule>
+
+# Handle OPTIONS preflight requests
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=204,L]
+# END CORS CONFIGURATION

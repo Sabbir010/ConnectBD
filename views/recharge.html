@@ -1,0 +1,29 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Recharge Balance</h2>
+        <button class="back-to-profile text-violet-600 font-semibold hover:underline">&larr; Back to Profile</button>
+    </div>
+    <div class="bg-blue-100/80 border-l-4 border-blue-500 text-blue-800 p-4 rounded-lg mb-6">
+        <p class="font-bold">Instructions:</p>
+        <p>Send money to the number below and fill out the form with the transaction ID.</p>
+        <p class="mt-2"><strong>bKash/Nagad Number:</strong> 01234567890</p>
+    </div>
+    <form id="recharge-form" class="space-y-4">
+        <div>
+            <label class="block font-medium text-gray-700">Amount</label>
+            <input type="number" name="amount" class="w-full p-3 border rounded-lg shadow-sm input-field" required>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Payment Method</label>
+            <select name="method" class="w-full p-3 border rounded-lg shadow-sm input-field">
+                <option value="bKash">bKash</option>
+                <option value="Nagad">Nagad</option>
+            </select>
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700">Transaction ID (TrxID)</label>
+            <input type="text" name="trx_id" class="w-full p-3 border rounded-lg shadow-sm input-field" required>
+        </div>
+        <button type="submit" class="w-full py-3 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors">Send Request</button>
+    </form>
+</div>

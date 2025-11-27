@@ -1,0 +1,44 @@
+<div class="glass-card p-4 sm:p-6 rounded-2xl shadow-lg relative">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 border-b border-white/50 pb-3 gap-2">
+        <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-700">Ball Sort Puzzle</h2>
+            <p id="level-indicator" class="text-sm text-gray-600">Level: 1</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="text-center bg-yellow-100 p-2 rounded-lg">
+                <p class="font-bold text-yellow-700 flex items-center"><i class="fas fa-coins mr-1"></i> <span id="user-gold-coins">0</span></p>
+            </div>
+             <div class="text-center bg-gray-100 p-2 rounded-lg">
+                <p class="font-bold text-gray-700">Free Undos: <span id="free-undo-count">3</span></p>
+            </div>
+            <button class="back-to-games text-violet-600 font-semibold hover:underline">&larr; Back to Games</button>
+        </div>
+    </div>
+
+    <div id="game-board" class="flex flex-wrap justify-center items-end gap-4 min-h-[250px] my-6">
+        </div>
+
+    <div class="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+        <button id="restart-level-btn" class="game-control-btn bg-yellow-500 w-full sm:w-auto"><i class="fas fa-redo-alt"></i> Restart</button>
+        <button id="undo-move-btn" class="game-control-btn bg-gray-500 w-full sm:w-auto"><i class="fas fa-undo-alt"></i> Undo</button>
+        <button id="add-tube-btn" class="game-control-btn bg-blue-500 w-full sm:w-auto"><i class="fas fa-plus"></i> Add Tube</button>
+    </div>
+
+    <div id="win-animation-container" class="hidden absolute inset-0 pointer-events-none"></div>
+
+    <div id="win-modal" class="hidden absolute inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-lg text-center transform scale-90 transition-transform">
+            <h3 class="text-3xl font-bold text-green-500">Level Complete!</h3>
+            <p id="reward-message" class="mt-2 text-lg">You earned <span class="font-bold">1</span> Gold Coin!</p>
+            <div class="mt-6">
+                <button id="next-level-btn" class="game-control-btn bg-green-500">Next Level</button>
+                <button id="play-again-btn" class="game-control-btn bg-blue-500 ml-2">Play Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .game-control-btn {
+        @apply px-5 py-2 text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition-opacity;
+    }
+</style>

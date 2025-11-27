@@ -1,0 +1,71 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Edit Profile</h2>
+        <button class="back-to-profile text-violet-600 font-semibold hover:underline">&larr; Back to Profile</button>
+    </div>
+
+    <div class="text-center mb-8 border-b border-white/50 pb-6">
+        <img id="edit-profile-avatar-preview" class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white/50 shadow-lg" src="">
+        <form id="avatar-upload-form" class="mt-4 space-x-2">
+            <label for="avatar-file-input" class="cursor-pointer bg-white/80 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-md">Change Photo</label>
+            <input type="file" name="avatarFile" id="avatar-file-input" class="hidden">
+            <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Upload</button>
+        </form>
+        <p id="avatar-upload-status" class="text-sm mt-2"></p>
+    </div>
+
+    <form id="edit-profile-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input type="text" id="edit-full-name" name="full_name" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input type="text" id="edit-phone" name="phone_number" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Country</label>
+                <input type="text" id="edit-country" name="country" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700">City</label>
+                <input type="text" id="edit-city" name="city" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700">Religion</label>
+                <input type="text" id="edit-religion" name="religion" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700">Relationship Status</label>
+                <select id="edit-relationship" name="relationship_status" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+                    <option value="Single">Single</option>
+                    <option value="In a relationship">In a relationship</option>
+                    <option value="Married">Married</option>
+                    <option value="Complicated">It's Complicated</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                <select id="edit-gender" name="gender" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Birthday</label>
+                <input type="date" id="edit-birthday" name="birthday" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field">
+            </div>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Bio</label>
+            <textarea id="edit-bio" name="bio" rows="3" class="mt-1 block w-full px-3 py-2 border rounded-lg shadow-sm input-field"></textarea>
+        </div>
+
+        <div class="pt-4">
+             <button type="submit" class="w-full py-3 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors">Update Profile</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,125 @@
+/* ConnectBD/css/games/ball_sort.css */
+
+#game-board {
+    --tube-width: 60px;
+    --ball-size: 50px;
+    --ball-margin: 5px;
+}
+
+@media (max-width: 640px) {
+    #game-board {
+        --tube-width: 50px;
+        --ball-size: 42px;
+        --ball-margin: 4px;
+    }
+}
+
+.tube {
+    width: var(--tube-width);
+    height: calc(var(--ball-size) * 4 + var(--ball-margin) * 5 + 10px);
+    background-image: linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top: none;
+    border-radius: 0 0 30px 30px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+}
+
+.tube::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 5px;
+    right: 5px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 5px 5px 0 0;
+}
+
+.tube:hover {
+    /* No visual change on hover */
+}
+
+.tube.selected {
+    transform: translateY(-20px) scale(1.05);
+    box-shadow: 0 0 25px 5px rgba(139, 92, 246, 0.7);
+}
+
+/* --- NEW ANIMATION FOR COMPLETED TUBE --- */
+.tube.completed {
+    animation: tube-complete-glow 1s ease-in-out;
+}
+
+@keyframes tube-complete-glow {
+    0% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 30px 10px rgba(255, 215, 0, 1); }
+    100% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5); }
+}
+
+.ball {
+    width: var(--ball-size);
+    height: var(--ball-size);
+    border-radius: 50%;
+    margin: var(--ball-margin) auto 0;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.ball::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 20%;
+    width: 60%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 80%);
+    border-radius: 50%;
+    transform: rotate(45deg);
+}
+
+/* --- NEW CONFETTI ANIMATION --- */
+#win-animation-container {
+    overflow: hidden;
+}
+
+.confetti {
+    width: 15px;
+    height: 15px;
+    background-color: #f00;
+    position: absolute;
+    top: -20px;
+    animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotateZ(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotateZ(720deg);
+        opacity: 0;
+    }
+}
+
+/* Ball Colors */
+.ball-red { background: radial-gradient(circle at 65% 35%, #ff5252, #c62828); }
+.ball-blue { background: radial-gradient(circle at 65% 35%, #448aff, #1565c0); }
+.ball-green { background: radial-gradient(circle at 65% 35%, #69f0ae, #00c853); }
+.ball-yellow { background: radial-gradient(circle at 65% 35%, #ffd600, #ffab00); }
+.ball-purple { background: radial-gradient(circle at 65% 35%, #e040fb, #aa00ff); }
+.ball-orange { background: radial-gradient(circle at 65% 35%, #ff6d00, #dd2c00); }
+.ball-cyan { background: radial-gradient(circle at 65% 35%, #18ffff, #00b8d4); }
+.ball-pink { background: radial-gradient(circle at 65% 35%, #ff80ab, #f50057); }
+.ball-lime { background: radial-gradient(circle at 65% 35%, #c6ff00, #aeea00); }
+.ball-teal { background: radial-gradient(circle at 65% 35%, #64ffda, #1de9b6); }
+.ball-brown { background: radial-gradient(circle at 65% 35%, #8d6e63, #5d4037); }
+.ball-grey { background: radial-gradient(circle at 65% 35%, #bdbdbd, #757575); }

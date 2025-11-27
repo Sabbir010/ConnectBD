@@ -1,0 +1,54 @@
+#color-sort-board .cs-column {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    padding: 4px;
+}
+
+.cs-block {
+    height: 45px;
+    width: 100%;
+    border-radius: 6px;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.15);
+}
+
+.cs-block:hover {
+    transform: scale(1.05);
+}
+
+.cs-block.selected {
+    transform: translateY(-15px) scale(1.1);
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
+}
+
+#cs-next-queue .cs-block {
+    cursor: default;
+    height: 50px;
+    width: 50px;
+}
+.cs-block.clearing {
+    animation: clear-animation 0.5s forwards;
+}
+
+@keyframes clear-animation {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+/* Block Colors */
+.cs-block-red { background-color: #ef4444; }
+.cs-block-blue { background-color: #3b82f6; }
+.cs-block-green { background-color: #22c55e; }
+.cs-block-yellow { background-color: #eab308; }
+.cs-block-purple { background-color: #8b5cf6; }
+.cs-block-orange { background-color: #f97316; }
+.cs-block-cyan { background-color: #06b6d4; }
+.cs-block-pink { background-color: #ec4899; }

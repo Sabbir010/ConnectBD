@@ -1,0 +1,27 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Staff Panel</h2>
+        <button class="back-to-home text-violet-600 font-semibold hover:underline">&larr; Back to Home</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="staff-tool-card" data-view="pending_transactions"><i class="fas fa-hourglass-half text-3xl text-yellow-500"></i><h3 class="font-bold mt-2">Pending Transactions</h3></div>
+        <div class="staff-tool-card" data-view="all_transactions"><i class="fas fa-list-alt text-3xl text-yellow-600"></i><h3 class="font-bold mt-2">All Transactions</h3></div>
+        <div class="staff-tool-card" data-view="pending_archives"><i class="fas fa-archive text-3xl text-indigo-500"></i><h3 class="font-bold mt-2">Pending Archives</h3></div>
+        <div class="staff-tool-card admin-only" data-view="site_settings"><i class="fas fa-cog text-3xl text-gray-600"></i><h3 class="font-bold mt-2">Site Settings</h3></div>
+        <div class="staff-tool-card admin-only" data-view="premium_settings"><i class="fas fa-star text-3xl text-pink-500"></i><h3 class="font-bold mt-2">Premium Settings</h3></div>
+        <div class="staff-tool-card admin-only" data-view="admin_dashboard"><i class="fas fa-chart-line text-3xl text-teal-500"></i><h3 class="font-bold mt-2">Admin Dashboard</h3></div>
+        <div class="staff-tool-card" data-view="reports"><i class="fas fa-flag text-3xl text-orange-500"></i><h3 class="font-bold mt-2">Manage Reports</h3></div>
+        <div class="staff-tool-card" data-view="report_logs"><i class="fas fa-history text-3xl text-gray-500"></i><h3 class="font-bold mt-2">Report Logs</h3></div>
+        <div class="staff-tool-card" data-view="user_search"><i class="fas fa-search text-3xl text-blue-500"></i><h3 class="font-bold mt-2">User Search</h3></div>
+        <div class="staff-tool-card" data-view="moderate_shouts"><i class="fas fa-comment-slash text-3xl text-red-500"></i><h3 class="font-bold mt-2">Moderate Shouts</h3></div>
+        <div class="staff-tool-card" data-view="moderate_topics"><i class="fas fa-comments text-3xl text-purple-500"></i><h3 class="font-bold mt-2">Moderate Topics</h3></div>
+        <div class="staff-tool-card" data-view="moderate_archives"><i class="fas fa-book-open text-3xl text-green-500"></i><h3 class="font-bold mt-2">Moderate Archives</h3></div>
+        <div class="staff-tool-card admin-only" data-view="lottery_admin"><i class="fas fa-trophy text-3xl text-amber-500"></i><h3 class="font-bold mt-2">Lottery Admin</h3></div>
+        <div class="staff-tool-card admin-only" data-view="theme_promo_generator"><i class="fas fa-ticket-alt text-3xl text-cyan-500"></i><h3 class="font-bold mt-2">Theme Promo Generator</h3></div>
+        <div class="staff-tool-card admin-only" data-view="hidden_staff"><i class="fas fa-user-secret text-3xl text-gray-700"></i><h3 class="font-bold mt-2">Hidden Staff</h3></div>
+    </div>
+    <div id="staff-tool-content" class="mt-8"></div>
+</div>
+<style>
+    .staff-tool-card { @apply bg-white/70 p-4 rounded-lg shadow-md text-center cursor-pointer transition-transform transform hover:scale-105; }
+</style>

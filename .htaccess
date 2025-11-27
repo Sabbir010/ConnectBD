@@ -1,0 +1,26 @@
+RewriteEngine On
+Options -Indexes
+
+# Base URL সেট করা হচ্ছে
+RewriteBase /
+
+# HTTP থেকে HTTPS-এ রিডাইরেক্ট করুন
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# www ছাড়া ডোমেইনে রিডাইরেক্ট করুন
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# infinityfree-এর ?i=1 সমস্যা সমাধান
+RewriteCond %{QUERY_STRING} ^i=1$
+RewriteRule ^(.*)$ /$1? [R=301,L]
+
+# অ্যাসেট ফোল্ডারগুলোকে রিডাইরেক্ট রুল থেকে বাদ দিন
+RewriteCond %{REQUEST_URI} !^/(api|js|css|uploads|views)/
+
+# যদি অনুরোধটি কোনো ফাইল বা ডিরেক্টরির জন্য না হয়
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# তাহলে সব অনুরোধ index.html-এ পাঠান
+RewriteRule . index.html [L]

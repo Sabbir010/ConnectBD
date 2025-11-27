@@ -1,0 +1,45 @@
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold">Admin Panel</h2>
+    <button class="back-to-home text-blue-600 font-semibold">&larr; Back to Home</button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div class="admin-tool-card" data-view="manage_staff">
+        <i class="fas fa-user-shield text-3xl text-red-600"></i>
+        <h3 class="font-bold mt-2">Manage Staff</h3>
+        <p class="text-xs text-gray-500">Promote or demote users to staff roles.</p>
+    </div>
+    
+    <div class="admin-tool-card" data-view="site_settings">
+        <i class="fas fa-cog text-3xl text-gray-600"></i>
+        <h3 class="font-bold mt-2">Site Settings</h3>
+        <p class="text-xs text-gray-500">Manage global site configurations.</p>
+    </div>
+
+    <div class="admin-tool-card" data-view="broadcast_message">
+        <i class="fas fa-bullhorn text-3xl text-blue-600"></i>
+        <h3 class="font-bold mt-2">Broadcast Message</h3>
+        <p class="text-xs text-gray-500">Send a message to all active users.</p>
+    </div>
+
+    <div class="admin-tool-card" data-view="adjust_balance">
+        <i class="fas fa-wallet text-3xl text-green-600"></i>
+        <h3 class="font-bold mt-2">Adjust User Balance</h3>
+        <p class="text-xs text-gray-500">Manually add or remove funds from a user.</p>
+    </div>
+    
+    <div class="admin-tool-card" data-view="all_transactions">
+        <i class="fas fa-list-alt text-3xl text-yellow-600"></i>
+        <h3 class="font-bold mt-2">View All Transactions</h3>
+        <p class="text-xs text-gray-500">Browse the history of all transactions.</p>
+    </div>
+
+    </div>
+
+<div id="admin-tool-content" class="mt-8"></div>
+
+<style>
+    .admin-tool-card {
+        @apply bg-white p-4 rounded-lg shadow-md text-center cursor-pointer transition-transform transform hover:scale-105;
+    }
+</style>

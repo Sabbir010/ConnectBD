@@ -1,0 +1,40 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Buy Premium Membership</h2>
+        <button class="back-to-home text-violet-600 font-semibold hover:underline">&larr; Back to Home</button>
+    </div>
+    
+    <div class="text-center bg-white/50 p-4 rounded-lg mb-6">
+        <h3 class="font-semibold text-lg">Premium User Benefits:</h3>
+        <ul class="text-gray-600 list-disc list-inside text-left mt-2">
+            <li>Edit Your Shouts anytime.</li>
+            <li>Edit Your Forum Topics.</li>
+            <li>Edit Your Forum Replies.</li>
+            <li>Get a special "Premium User" badge on your profile.</li>
+        </ul>
+    </div>
+
+    <div id="site-wide-discount-alert" class="hidden text-center bg-green-100 text-green-800 p-3 rounded-lg mb-6"></div>
+
+    <div id="premium-packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        </div>
+    
+    <form id="buy-premium-form" class="mt-8 border-t border-white/50 pt-6">
+        <input type="hidden" name="package_id" id="selected-package-id" required>
+        <div id="coupon-code-area" class="max-w-md mx-auto">
+            <label for="coupon-code-input" class="block font-medium text-gray-700">Have a Coupon Code?</label>
+            <div class="flex space-x-2 mt-1">
+                <input type="text" id="coupon-code-input" name="coupon_code" class="w-full p-2 border rounded-lg shadow-sm input-field" placeholder="Enter coupon code">
+                <button type="button" id="apply-coupon-btn" class="px-4 py-2 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100">Apply</button>
+            </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-gray-100/80 rounded-lg max-w-md mx-auto text-center">
+            <h4 class="font-bold text-lg">Your Order</h4>
+            <div id="order-summary" class="text-gray-700 space-y-1 mt-2">
+                <p>Please select a package first.</p>
+            </div>
+            <button type="submit" class="mt-4 w-full py-3 font-semibold text-white bg-violet-600 rounded-lg shadow-md hover:bg-violet-700">Confirm & Buy Now</button>
+        </div>
+    </form>
+</div>

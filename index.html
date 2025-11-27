@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectBD.Com - Your Social Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/games/ball_sort.css"> 
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/themes.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.5);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+        .input-field { padding-left: 3rem; background: rgba(255, 255, 255, 0.7); }
+        
+        #auth-container, #app-container {
+            display: none;
+        }
+        /* প্রিমিয়াম ইউজারনেম-এর জন্য গ্লোবাল স্টাইল */
+        .premium-username {
+            color: #8B5CF6 !important; /* বেগুনি রঙ */
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        /* BBCode লিংকের জন্য নতুন স্টাইল */
+        .bbcode-link, .bbcode-tag {
+            color: #8B5CF6; /* বেগুনি রঙ */
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .bbcode-link:hover, .bbcode-tag:hover {
+            text-decoration: underline;
+        }
+        
+        /* *** নতুন ফিক্স: মেসেজ বক্সের লেখার রঙ ঠিক করা হয়েছে *** */
+        .glass-card textarea, .glass-card input[type="text"], .glass-card input[type="email"], .glass-card input[type="password"], .glass-card input[type="number"] {
+            color: #1f2937; /* গাঢ় ধূসর রঙ */
+        }
+        .dark-theme-placeholder ::placeholder {
+            color: #a0aec0 !important;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-300 via-violet-400 to-blue-400 text-gray-800">
+
+    <div id="auth-container" class="flex items-center justify-center min-h-screen px-4">
+        <div class="w-full max-w-sm p-8 space-y-8 glass-card rounded-2xl shadow-lg text-center">
+            
+            <form id="register-form" class="hidden space-y-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-700">Create Account</h2>
+                <p class="text-sm text-gray-600">to get started now!</p>
+                <div class="relative"><i class="fas fa-user input-icon"></i><input type="text" id="register-name" name="name" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required></div>
+                <div class="relative"><i class="fas fa-envelope input-icon"></i><input type="email" id="register-email" name="email" placeholder="Your Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required></div>
+                <div class="relative"><i class="fas fa-lock input-icon"></i><input type="password" id="register-password" name="password" placeholder="New Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required></div>
+                <div class="relative"><i class="fas fa-venus-mars input-icon"></i><select id="register-gender" name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required><option value="" disabled selected>Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+                <p id="register-error" class="text-red-500 text-sm text-center hidden"></p>
+                <button type="submit" class="w-full py-3 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors">Sign Up</button>
+                <p class="text-center text-sm text-gray-600">Already have an account? <a href="#" id="show-login" class="font-semibold text-violet-600 hover:underline">Login Now</a></p>
+            </form>
+
+            <form id="login-form" class="space-y-6">
+                 <h2 class="text-2xl sm:text-3xl font-bold text-gray-700">Welcome,</h2>
+                 <p class="text-sm text-gray-600">Glad to see you!</p>
+                 <div class="relative"><i class="fas fa-envelope input-icon"></i><input type="email" id="login-email" name="email" placeholder="Email Address" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required></div>
+                 <div class="relative"><i class="fas fa-lock input-icon"></i><input type="password" id="login-password" name="password" placeholder="Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm input-field" required></div>
+                 <p id="login-error" class="text-red-500 text-sm text-center hidden"></p>
+                 <button type="submit" class="w-full py-3 font-semibold text-gray-700 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors">Login</button>
+                 <p class="text-center text-sm text-gray-600">Don't have an account? <a href="#" id="show-register" class="font-semibold text-violet-600 hover:underline">Sign Up Now</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <header class="bg-white/70 backdrop-blur-md shadow-md sticky top-0 z-50">
+           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+               <div class="flex justify-between items-center h-16">
+                   <div class="flex items-center space-x-4">
+                       <div class="flex-shrink-0 text-2xl font-bold text-violet-600">ConnectBD</div>
+                       <nav class="hidden sm:flex items-center space-x-4">
+                           <div class="nav-link flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-100 rounded-md" data-view="home">
+                               <i class="fas fa-home"></i>
+                               <span class="font-semibold">Home</span>
+                           </div>
+                       </nav>
+                   </div>
+                   <div class="flex items-center space-x-4">
+                       <div class="relative">
+                           <button id="user-menu-button" class="flex items-center space-x-2">
+                               <img id="header-user-avatar" class="h-8 w-8 rounded-full object-cover" src="" alt="Avatar">
+                               <span id="header-user-name" class="font-semibold hidden sm:block"></span>
+                           </button>
+                           <div id="user-menu-dropdown" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 hidden">
+                               <a href="#" id="stop-impersonation-btn" class="hidden block px-4 py-2 text-sm text-red-700 bg-red-50 hover:bg-red-100 font-bold">Return to Admin</a>
+                               <a href="#" id="show-profile-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                               <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto py-6 px-4">
+            <div id="center-panel" class="w-full space-y-6"></div>
+        </main>
+    </div>
+    
+    <script type="module" src="/js/main.js"></script> 
+
+</body>
+</html>

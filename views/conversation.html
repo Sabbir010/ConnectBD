@@ -1,0 +1,13 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+        <h2 id="conversation-with-name" class="text-xl font-bold text-gray-700"></h2>
+        <button class="back-to-home text-violet-600 font-semibold hover:underline">&larr; Back to Home</button>
+    </div>
+    <div id="conversation-pagination-container" class="flex justify-center items-center mb-4 space-x-2"></div>
+    <div id="conversation-messages" class="h-96 overflow-y-auto bg-white/50 border border-white/30 p-4 rounded-lg space-y-4 mb-4"></div>
+    <form id="reply-pm-form" class="flex space-x-2">
+        <input type="hidden" id="reply-receiver-id" name="receiver_id">
+        <input type="text" id="reply-message-text" name="message" class="w-full p-3 border rounded-lg shadow-sm input-field" placeholder="Write your reply..." required>
+        <button type="submit" class="px-4 py-2 font-semibold text-violet-700 bg-white rounded-lg shadow-md hover:bg-gray-100">Send</button>
+    </form>
+</div>

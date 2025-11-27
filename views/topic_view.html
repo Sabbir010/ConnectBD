@@ -1,0 +1,29 @@
+<div class="glass-card p-4 sm:p-6 rounded-2xl shadow-lg">
+    <div id="topic-header" class="mb-4 border-b pb-4">
+        <h2 id="topic-title" class="text-xl sm:text-2xl font-bold text-gray-800"></h2>
+        <div class="text-sm text-gray-500 mt-2 flex justify-between items-center">
+            <span id="topic-meta"></span>
+            <div>
+                <a href="#" id="topic-options-link" class="font-semibold text-violet-600 hover:underline">Options</a> ||
+                <a href="#" id="shout-topic-link" class="font-semibold text-green-600 hover:underline">Shout</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="topic-main-post" class="mb-6"></div>
+    
+    <h3 class="text-lg sm:text-xl font-semibold mb-2">Replies</h3>
+    <div id="topic-replies" class="space-y-4 mb-6"></div>
+    
+    <div id="reply-pagination-container" class="flex justify-center items-center my-4 space-x-2"></div>
+
+    <form id="topic-reply-form" class="mt-8">
+        <input type="hidden" name="topic_id" id="reply-topic-id">
+        <h4 class="font-semibold mb-2">Post Your Reply:</h4>
+        <textarea name="content" class="w-full p-3 border rounded-lg shadow-sm input-field" rows="4" placeholder="Write a reply..."></textarea>
+        <div class="flex justify-between items-center mt-2">
+            <button type="submit" class="px-6 py-2 font-semibold text-white bg-violet-600 rounded-lg shadow-md hover:bg-violet-700">Post Your Reply</button>
+            <button type="button" class="back-to-topics text-violet-600 font-semibold hover:underline">&larr; Back to Topics</button>
+        </div>
+    </form>
+</div>
