@@ -24,7 +24,7 @@ switch ($action) {
     case 'get_premium_tools_data':
         // প্রোফাইল ভিজিটরদের তালিকা আনা হচ্ছে
         $visitors_query = "
-            SELECT u.id, u.display_name, u.photo_url, pv.viewed_at 
+            SELECT u.id, u.display_name, u.photo_url, pv.viewed_at, u.is_special
             FROM profile_views pv
             JOIN users u ON pv.viewer_id = u.id
             WHERE pv.profile_id = ?

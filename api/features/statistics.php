@@ -24,35 +24,35 @@ switch ($action) {
         $query = "";
         $count_query = "";
         $unit = '';
-        $base_select = "SELECT u.id, u.display_name, u.photo_url, u.role, u.display_role, T.stat_value ";
+        $base_select = "SELECT u.id, u.display_name, u.capitalized_username, u.username_color, u.capitalization_expires_at, u.photo_url, u.role, u.display_role, u.is_verified, u.is_special, T.stat_value ";
+        $base_user_select = "SELECT id, display_name, capitalized_username, username_color, capitalization_expires_at, photo_url, role, display_role, is_verified, is_special";
 
         switch ($type) {
-            // General Member Lists (ORDER BY display_name ASC করা হয়েছে)
             case 'total_members':
                 $count_query = "SELECT COUNT(id) as total FROM users";
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users ORDER BY display_name ASC LIMIT ? OFFSET ?";
+                $query = "$base_user_select FROM users ORDER BY display_name ASC LIMIT ? OFFSET ?";
                 break;
             case 'male_members':
                 $count_query = "SELECT COUNT(id) as total FROM users WHERE gender = 'Male'";
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users WHERE gender = 'Male' ORDER BY display_name ASC LIMIT ? OFFSET ?";
+                $query = "$base_user_select FROM users WHERE gender = 'Male' ORDER BY display_name ASC LIMIT ? OFFSET ?";
                 break;
             case 'female_members':
                 $count_query = "SELECT COUNT(id) as total FROM users WHERE gender = 'Female'";
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users WHERE gender = 'Female' ORDER BY display_name ASC LIMIT ? OFFSET ?";
+                $query = "$base_user_select FROM users WHERE gender = 'Female' ORDER BY display_name ASC LIMIT ? OFFSET ?";
                 break;
-
-            // Top Lists
+            
             case 'top_shouters':
                 $unit = 'shouts';
-                $query = $base_select . "FROM users u JOIN (SELECT user_id, COUNT(id) as stat_value FROM shouts GROUP BY user_id) AS T ON u.id = T.user_id ORDER BY T.stat_value DESC LIMIT 20";
+                $query = "$base_user_select, total_shouts as stat_value FROM users ORDER BY total_shouts DESC LIMIT 20";
                 break;
             case 'top_chatters':
                 $unit = 'messages';
-                $query = $base_select . "FROM users u JOIN (SELECT sender_id as user_id, COUNT(id) as stat_value FROM private_messages WHERE sender_id != 2 GROUP BY sender_id) AS T ON u.id = T.user_id ORDER BY T.stat_value DESC LIMIT 20";
+                $query = "$base_user_select, total_pms_sent as stat_value FROM users ORDER BY total_pms_sent DESC LIMIT 20";
                 break;
+
             case 'top_gold_coin':
                 $unit = 'gold';
-                $query = "SELECT id, display_name, photo_url, role, display_role, gold_coins as stat_value FROM users ORDER BY gold_coins DESC LIMIT 20";
+                $query = "$base_user_select, gold_coins as stat_value FROM users ORDER BY gold_coins DESC LIMIT 20";
                 break;
             case 'top_gifter':
                 $unit = 'gifts sent';
@@ -64,11 +64,11 @@ switch ($action) {
                 break;
             case 'top_archive_posters':
                 $unit = 'archives';
-                $query = $base_select . "FROM users u JOIN (SELECT user_id, COUNT(id) as stat_value FROM archives WHERE status = 'approved' GROUP BY user_id) AS T ON u.id = T.user_id ORDER BY T.stat_value DESC LIMIT 20";
+                $query = "$base_user_select, total_archives as stat_value FROM users ORDER BY total_archives DESC LIMIT 20";
                 break;
             case 'top_topic_creator':
                 $unit = 'topics';
-                $query = $base_select . "FROM users u JOIN (SELECT user_id, COUNT(id) as stat_value FROM topics GROUP BY user_id) AS T ON u.id = T.user_id ORDER BY T.stat_value DESC LIMIT 20";
+                $query = "$base_user_select, total_topics as stat_value FROM users ORDER BY total_topics DESC LIMIT 20";
                 break;
             case 'top_posters':
                 $unit = 'replies';
@@ -76,11 +76,11 @@ switch ($action) {
                 break;
             case 'top_balance':
                 $unit = 'balance';
-                $query = "SELECT id, display_name, photo_url, role, display_role, balance as stat_value FROM users ORDER BY balance DESC LIMIT 20";
+                $query = "$base_user_select, balance as stat_value FROM users ORDER BY balance DESC LIMIT 20";
                 break;
             case 'longest_online':
                 $unit = 'seconds';
-                $query = "SELECT id, display_name, photo_url, role, display_role, total_online_seconds as stat_value FROM users ORDER BY total_online_seconds DESC LIMIT 20";
+                $query = "$base_user_select, total_online_seconds as stat_value FROM users ORDER BY total_online_seconds DESC LIMIT 20";
                 break;
             case 'top_gamers':
                 $unit = 'levels';
@@ -90,16 +90,14 @@ switch ($action) {
                 $unit = 'gifts received';
                 $query = $base_select . "FROM users u JOIN (SELECT owner_id as user_id, COUNT(id) as stat_value FROM user_gifts GROUP BY owner_id) AS T ON u.id = T.user_id ORDER BY T.stat_value DESC LIMIT 20";
                 break;
-            
-            // Special & Ban Lists
             case 'staff_list':
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users WHERE role IN ('Admin', 'Senior Moderator', 'Moderator') AND (display_role IS NULL OR display_role != 'Member') ORDER BY FIELD(role, 'Admin', 'Senior Moderator', 'Moderator')";
+                $query = "$base_user_select FROM users WHERE role IN ('Admin', 'Senior Moderator', 'Moderator') AND (display_role IS NULL OR display_role != 'Member') ORDER BY FIELD(role, 'Admin', 'Senior Moderator', 'Moderator')";
                 break;
             case 'premium_user_list':
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users WHERE is_premium = 1 AND premium_expires_at > NOW() ORDER BY display_name ASC";
+                $query = "$base_user_select FROM users WHERE is_premium = 1 AND premium_expires_at > NOW() ORDER BY display_name ASC";
                 break;
             case 'banned_list':
-                $query = "SELECT id, display_name, photo_url, role, display_role FROM users WHERE is_banned = 1 ORDER BY display_name ASC";
+                $query = "$base_user_select FROM users WHERE is_banned = 1 ORDER BY display_name ASC";
                 break;
             default:
                 $response['message'] = 'This statistics list is not yet implemented.';

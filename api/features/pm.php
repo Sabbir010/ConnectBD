@@ -22,23 +22,14 @@ switch ($action) {
             $stmt->bind_param("iis", $current_user_id, $receiver_id, $message);
             
             if ($stmt->execute()) {
+                // মেসেজ পাঠানোর কাউন্টার আপডেট করা হচ্ছে
+                $conn->query("UPDATE users SET total_pms_sent = total_pms_sent + 1 WHERE id = $current_user_id");
+                
                 $response = ['status' => 'success', 'message' => 'Message sent successfully.'];
 
                 if ($receiver_id == SYSTEM_USER_ID) {
-                    $pattern = '/^(\/imagine|\/create|\/draw)\s+(.+)/i';
-                    
-                    if (preg_match($pattern, $message, $matches)) {
-                        $user_prompt = $matches[2];
-                        $queue_stmt = $conn->prepare("INSERT INTO image_generation_queue (user_id, prompt) VALUES (?, ?)");
-                        $queue_stmt->bind_param("is", $current_user_id, $user_prompt);
-                        $queue_stmt->execute();
-                        $confirmation_msg = "আপনার ছবি তৈরির অনুরোধটি গ্রহণ করা হয়েছে। ছবিটি তৈরি হতে ৫-৭ মিনিট সময় লাগতে পারে। তৈরি হয়ে গেলে আপনাকে একটি নতুন বার্তায় ছবিটি পাঠানো হবে।";
-                        sendSystemPM($conn, $current_user_id, $confirmation_msg);
-
-                    } else {
-                        $ai_response = callGeminiAPI($message);
-                        sendSystemPM($conn, $current_user_id, $ai_response);
-                    }
+                    $ai_response = callGroqAPI($message);
+                    sendSystemPM($conn, $current_user_id, $ai_response);
                 }
             } else {
                 $response['message'] = 'Failed to send message. DB Error: ' . $stmt->error;
@@ -70,7 +61,7 @@ switch ($action) {
         $total_pages = ceil($total_conversations / $limit);
 
         $query = "
-            SELECT pm.*, u.display_name, u.photo_url FROM private_messages pm
+            SELECT pm.*, u.display_name, u.photo_url, u.is_verified, u.is_premium, u.premium_expires_at, u.role, u.display_role, u.is_special FROM private_messages pm
             JOIN (
                 SELECT LEAST(sender_id, receiver_id) as user1, GREATEST(sender_id, receiver_id) as user2, MAX(id) as max_id
                 FROM private_messages
@@ -113,7 +104,7 @@ switch ($action) {
             $offset = ($page - 1) * $limit;
 
             $stmt = $conn->prepare("
-                SELECT pm.*, u.display_name, u.photo_url 
+                SELECT pm.*, u.display_name, u.photo_url, u.is_verified, u.is_premium, u.premium_expires_at, u.role, u.display_role, u.is_special 
                 FROM private_messages pm
                 JOIN users u ON pm.sender_id = u.id
                 WHERE (pm.sender_id = ? AND pm.receiver_id = ?) OR (pm.sender_id = ? AND pm.receiver_id = ?)
@@ -134,10 +125,11 @@ switch ($action) {
     case 'get_latest_pm':
         if (!$current_user_id) { $response = ['status' => 'error']; break; }
         
+        // --- কোড আপডেট করা হয়েছে: JOIN কে LEFT JOIN করা হয়েছে ---
         $stmt = $conn->prepare("
             SELECT pm.sender_id, u.display_name 
             FROM private_messages pm
-            JOIN users u ON pm.sender_id = u.id
+            LEFT JOIN users u ON pm.sender_id = u.id
             WHERE pm.receiver_id = ? AND pm.is_read = 0
             ORDER BY pm.created_at DESC
             LIMIT 1
@@ -145,6 +137,11 @@ switch ($action) {
         $stmt->bind_param("i", $current_user_id);
         $stmt->execute();
         $latest_pm = $stmt->get_result()->fetch_assoc();
+
+        // --- কোড আপডেট করা হয়েছে: যদি প্রেরক মুছে যায়, তাহলে একটি ডিফল্ট নাম দেওয়া হবে ---
+        if ($latest_pm && is_null($latest_pm['display_name'])) {
+            $latest_pm['display_name'] = 'System/Deleted User';
+        }
         
         $response = ['status' => 'success', 'latest_pm' => $latest_pm];
         break;

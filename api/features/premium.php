@@ -118,6 +118,9 @@ switch ($action) {
             $trans_stmt = $conn->prepare("INSERT INTO transactions (user_id, type, amount, method, details, status) VALUES (?, 'Purchase', ?, 'Balance', ?, 'approved')");
             $trans_stmt->bind_param("ids", $current_user_id, $final_price, $details);
             $trans_stmt->execute();
+            
+            // 5. Add XP for Premium Purchase
+            addXP($conn, $current_user_id, 10); // Buy Premium: 10 XP
 
             $conn->commit();
             $response = ['status' => 'success', 'message' => 'Congratulations! You are now a Premium Member.'];

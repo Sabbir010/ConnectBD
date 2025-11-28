@@ -86,15 +86,12 @@ switch ($action) {
         $stats = [];
         $stats['total_members'] = $conn->query("SELECT COUNT(id) as count FROM users")->fetch_assoc()['count'];
 
-        $newest_user_data = $conn->query("SELECT id, display_name, is_premium, premium_expires_at FROM users ORDER BY id DESC LIMIT 1")->fetch_assoc();
+        // *** আপডেটেড: username_color, is_verified, is_special যোগ করা হয়েছে ***
+        $newest_user_data = $conn->query("SELECT id, display_name, capitalized_username, username_color, is_premium, premium_expires_at, is_verified, is_special FROM users ORDER BY id DESC LIMIT 1")->fetch_assoc();
         if ($newest_user_data) {
-            $stats['newest_member'] = $newest_user_data['display_name'];
-            $stats['newest_member_id'] = $newest_user_data['id'];
-            $stats['newest_member_is_premium'] = $newest_user_data['is_premium'] && $newest_user_data['premium_expires_at'] && (new DateTime() < new DateTime($newest_user_data['premium_expires_at']));
+            $stats['newest_member_data'] = $newest_user_data;
         } else {
-            $stats['newest_member'] = 'N/A';
-            $stats['newest_member_id'] = 0;
-            $stats['newest_member_is_premium'] = false;
+            $stats['newest_member_data'] = null;
         }
 
         $stats['active_today'] = $conn->query("SELECT COUNT(id) as count FROM users WHERE last_seen > NOW() - INTERVAL 24 HOUR")->fetch_assoc()['count'];
@@ -105,7 +102,7 @@ switch ($action) {
             SUM(CASE WHEN gender = 'Female' THEN 1 ELSE 0 END) as female_online,
             SUM(CASE WHEN is_premium = 1 AND premium_expires_at > NOW() THEN 1 ELSE 0 END) as premium_online,
             SUM(CASE WHEN role IN ('Admin', 'Senior Moderator', 'Moderator') AND (display_role IS NULL OR display_role != 'Member') THEN 1 ELSE 0 END) as staff_online
-            FROM users WHERE last_seen > NOW() - INTERVAL 5 MINUTE";
+            FROM users WHERE last_activity > NOW() - INTERVAL 60 MINUTE";
         $online_stats = $conn->query($online_query)->fetch_assoc();
         $stats = array_merge($stats, $online_stats);
 
@@ -116,15 +113,17 @@ switch ($action) {
         $list_type = $_GET['type'] ?? '';
         $query_condition = "";
         switch($list_type) {
-            case 'total_online': $query_condition = "last_seen > NOW() - INTERVAL 5 MINUTE"; break;
-            case 'male_online': $query_condition = "gender = 'Male' AND last_seen > NOW() - INTERVAL 5 MINUTE"; break;
-            case 'female_online': $query_condition = "gender = 'Female' AND last_seen > NOW() - INTERVAL 5 MINUTE"; break;
-            case 'premium_online': $query_condition = "is_premium = 1 AND premium_expires_at > NOW() AND last_seen > NOW() - INTERVAL 5 MINUTE"; break;
-            case 'staff_online': $query_condition = "role IN ('Admin', 'Senior Moderator', 'Moderator') AND (display_role IS NULL OR display_role != 'Member') AND last_seen > NOW() - INTERVAL 5 MINUTE"; break;
+            case 'total_online': $query_condition = "last_activity > NOW() - INTERVAL 60 MINUTE"; break;
+            case 'male_online': $query_condition = "gender = 'Male' AND last_activity > NOW() - INTERVAL 60 MINUTE"; break;
+            case 'female_online': $query_condition = "gender = 'Female' AND last_activity > NOW() - INTERVAL 60 MINUTE"; break;
+            case 'premium_online': $query_condition = "is_premium = 1 AND premium_expires_at > NOW() AND last_activity > NOW() - INTERVAL 60 MINUTE"; break;
+            case 'staff_online': $query_condition = "role IN ('Admin', 'Senior Moderator', 'Moderator') AND (display_role IS NULL OR display_role != 'Member') AND last_activity > NOW() - INTERVAL 60 MINUTE"; break;
             case 'active_today': $query_condition = "last_seen > NOW() - INTERVAL 24 HOUR"; break;
             default: $response['message'] = 'Invalid list type.'; echo json_encode($response); exit;
         }
-        $stmt = $conn->prepare("SELECT id, display_name, photo_url, role, display_role, is_premium, premium_expires_at, last_seen, last_activity, NOW() as server_time FROM users WHERE $query_condition ORDER BY last_seen DESC");
+        
+        // *** আপডেটেড: is_verified, is_special, username_color ফেচ করা হচ্ছে ***
+        $stmt = $conn->prepare("SELECT id, display_name, capitalized_username, username_color, photo_url, role, display_role, level, member_status, is_premium, premium_expires_at, last_seen, last_activity, NOW() as server_time, is_verified, is_special, xp FROM users WHERE $query_condition ORDER BY last_activity DESC");
         $stmt->execute();
         $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $response = ['status' => 'success', 'users' => $users];
@@ -153,8 +152,9 @@ switch ($action) {
                 $view_stmt->execute();
             }
 
-            $is_admin_viewing = ($is_admin && $current_user_id != $user_id_to_check);
+            $is_admin_viewing = (isset($is_admin) && $is_admin && $current_user_id != $user_id_to_check);
 
+            // *** আপডেটেড: সব কলাম ফেচ করা হচ্ছে ***
             $query = "SELECT *, NOW() as server_time, TIMESTAMPDIFF(SECOND, last_activity, NOW()) as idle_seconds FROM users WHERE id = ?";
             $stmt = $conn->prepare($query);
             $stmt->bind_param("i", $user_id_to_check);
@@ -167,6 +167,17 @@ switch ($action) {
                 if (!$is_admin_viewing && $current_user_id != $user_id_to_check) {
                     unset($user_data['phone_number']);
                     unset($user_data['email']);
+                }
+
+                // ডিফল্ট ভ্যালু সেট করা (যদি NULL থাকে)
+                $user_data['level'] = $user_data['level'] ?? 1;
+                $user_data['xp'] = $user_data['xp'] ?? 0;
+                $user_data['is_special'] = $user_data['is_special'] ?? 0;
+                $user_data['is_verified'] = $user_data['is_verified'] ?? 0;
+                $user_data['username_color'] = $user_data['username_color'] ?? null;
+
+                if (function_exists('getLevelStatus')) {
+                    $user_data['level_title'] = getLevelStatus($user_data['level']);
                 }
 
                 $views_stmt = $conn->prepare("SELECT COUNT(DISTINCT viewer_id) as count FROM profile_views WHERE profile_id = ?");
@@ -214,9 +225,19 @@ switch ($action) {
                                  $pinned_shout['reactions'][$row['reaction']] = $row['count'];
                              }
                          }
+                         // Pinned Shout এর সাথেও ইউজারের স্পেশাল স্ট্যাটাস এবং ব্লু টিক দরকার হতে পারে
+                         $pinned_shout['is_special'] = $user_data['is_special'];
+                         $pinned_shout['is_verified'] = $user_data['is_verified'];
+                         
                          $user_data['pinned_shout'] = $pinned_shout;
                     }
                 }
+
+                array_walk_recursive($user_data, function(&$item, $key){
+                    if(is_string($item) && !mb_detect_encoding($item, 'UTF-8', true)){
+                        $item = utf8_encode($item);
+                    }
+                });
 
                 $response = ['status' => 'success', 'user' => $user_data];
             } else {
@@ -228,7 +249,7 @@ switch ($action) {
         break;
 
     case 'delete_user':
-        if (!$is_admin) { $response['message'] = 'You do not have permission to delete users.'; break; }
+        if (!isset($is_admin) || !$is_admin) { $response['message'] = 'You do not have permission to delete users.'; break; }
         $user_id_to_delete = (int)($_POST['user_id'] ?? 0);
         if ($user_id_to_delete > 0 && $user_id_to_delete != $current_user_id) {
             $conn->query("DELETE FROM shout_reactions WHERE user_id = $user_id_to_delete");

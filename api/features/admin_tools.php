@@ -8,6 +8,97 @@ if (!$is_admin) {
 }
 
 switch ($action) {
+    // --- Special Status & Blue Tick Toggle ---
+    case 'toggle_special_status':
+        $user_id_to_modify = (int)($_POST['user_id'] ?? 0);
+        if ($user_id_to_modify > 0) {
+            $conn->query("UPDATE users SET is_special = !is_special WHERE id = $user_id_to_modify");
+            $response = ['status' => 'success', 'message' => 'User special status has been toggled.'];
+        } else {
+            $response['message'] = 'Invalid user ID.';
+        }
+        break;
+
+    case 'toggle_blue_tick':
+        $user_id_to_modify = (int)($_POST['user_id'] ?? 0);
+        if ($user_id_to_modify > 0) {
+            $conn->query("UPDATE users SET is_verified = !is_verified WHERE id = $user_id_to_modify");
+            $response = ['status' => 'success', 'message' => 'User blue tick status has been toggled.'];
+        } else {
+            $response['message'] = 'Invalid user ID.';
+        }
+        break;
+
+    // --- Clear Data Functionality ---
+    case 'clear_data':
+        $type = $_POST['type'] ?? '';
+        $message = 'Unknown error.';
+        $status = 'error';
+
+        if (!isset($_POST['confirm']) || $_POST['confirm'] !== 'true') {
+            $response['message'] = 'Confirmation not received.';
+            echo json_encode($response);
+            exit;
+        }
+
+        switch ($type) {
+            case 'notifications':
+                if ($conn->query("TRUNCATE TABLE notifications")) {
+                    $status = 'success';
+                    $message = 'All user notifications have been deleted.';
+                } else {
+                    $message = 'Failed to delete notifications.';
+                }
+                break;
+            case 'inboxes':
+                if ($conn->query("TRUNCATE TABLE private_messages")) {
+                    $status = 'success';
+                    $message = 'All user inboxes (private messages) have been deleted.';
+                } else {
+                    $message = 'Failed to delete inboxes.';
+                }
+                break;
+            case 'unread_inboxes':
+                if ($conn->query("DELETE FROM private_messages WHERE is_read = 0")) {
+                    $status = 'success';
+                    $message = 'All unread private messages have been deleted.';
+                } else {
+                    $message = 'Failed to delete unread messages.';
+                }
+                break;
+            case 'modlog':
+                if ($conn->query("TRUNCATE TABLE reports")) {
+                    $status = 'success';
+                    $message = 'Moderator logs (reports) have been cleared.';
+                } else {
+                    $message = 'Failed to clear moderator logs.';
+                }
+                break;
+            case 'shouts':
+                $conn->begin_transaction();
+                try {
+                    $conn->query("SET FOREIGN_KEY_CHECKS=0");
+                    $conn->query("TRUNCATE TABLE shouts");
+                    $conn->query("TRUNCATE TABLE shout_reactions");
+                    $conn->query("UPDATE users SET pinned_shout_id = NULL");
+                    $conn->query("SET FOREIGN_KEY_CHECKS=1");
+                    $conn->commit();
+                    $status = 'success';
+                    $message = 'All shouts and their reactions have been deleted.';
+                } catch (Exception $e) {
+                    $conn->rollback();
+                    $conn->query("SET FOREIGN_KEY_CHECKS=1");
+                    $message = 'Failed to delete shouts: ' . $e->getMessage();
+                }
+                break;
+            default:
+                $message = 'Invalid data clearing type specified.';
+                break;
+        }
+        $response = ['status' => $status, 'message' => $message];
+        break;
+
+    // --- Standard Admin Tools ---
     case 'get_themes_for_promo':
         $themes = $conn->query("SELECT id, name, type, cost FROM themes WHERE cost > 0 ORDER BY type, id")->fetch_all(MYSQLI_ASSOC);
         $response = ['status' => 'success', 'themes' => $themes];
@@ -19,12 +110,9 @@ switch ($action) {
             $response['message'] = 'Invalid theme selected.';
             break;
         }
-        
         $code = 'THEME-' . strtoupper(bin2hex(random_bytes(4))) . '-' . strtoupper(bin2hex(random_bytes(4)));
-        
         $stmt = $conn->prepare("INSERT INTO theme_promo_codes (code, theme_id, generated_by) VALUES (?, ?, ?)");
         $stmt->bind_param("sii", $code, $theme_id, $current_user_id);
-        
         if ($stmt->execute()) {
             $response = ['status' => 'success', 'code' => $code];
         } else {
@@ -60,7 +148,7 @@ switch ($action) {
             if ($stmt->execute()) {
                 $response = ['status' => 'success', 'message' => 'User role updated successfully.'];
             } else {
-                $response = ['message' => 'Failed to update role.'];
+                $response['message'] = 'Failed to update role.';
             }
         } else {
             $response['message'] = 'Invalid request. You cannot change your own role.';
@@ -70,14 +158,11 @@ switch ($action) {
     case 'adjust_balance':
         $user_id_to_modify = (int)($_POST['user_id'] ?? 0);
         $amount = (float)($_POST['amount'] ?? 0);
-        $adjustment_type = $_POST['type'] ?? 'add'; // 'add' or 'remove'
+        $adjustment_type = $_POST['type'] ?? 'add';
 
         if ($user_id_to_modify > 0 && is_numeric($amount) && $amount >= 0) {
             $sql = "UPDATE users SET balance = balance + ? WHERE id = ?";
-            if($adjustment_type === 'remove'){
-                $sql = "UPDATE users SET balance = balance - ? WHERE id = ?";
-            }
-
+            if($adjustment_type === 'remove') $sql = "UPDATE users SET balance = balance - ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("di", $amount, $user_id_to_modify);
             if ($stmt->execute()) {
@@ -86,7 +171,7 @@ switch ($action) {
                 $response['message'] = 'Failed to update balance.';
             }
         } else {
-            $response['message'] = 'Invalid data provided. Amount must be a positive number.';
+            $response['message'] = 'Invalid data provided.';
         }
         break;
 
@@ -97,9 +182,7 @@ switch ($action) {
 
         if ($user_id_to_modify > 0 && is_numeric($amount) && $amount >= 0) {
             $sql = "UPDATE users SET gold_coins = gold_coins + ? WHERE id = ?";
-            if ($adjustment_type === 'remove') {
-                $sql = "UPDATE users SET gold_coins = gold_coins - ? WHERE id = ?";
-            }
+            if ($adjustment_type === 'remove') $sql = "UPDATE users SET gold_coins = gold_coins - ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ii", $amount, $user_id_to_modify);
             if ($stmt->execute()) {
@@ -125,7 +208,7 @@ switch ($action) {
                 $response['message'] = 'Failed to reset password.';
             }
         } else {
-            $response['message'] = 'Invalid user or password must be at least 6 characters.';
+            $response['message'] = 'Invalid user or password.';
         }
         break;
 
@@ -158,7 +241,6 @@ switch ($action) {
     case 'issue_warning':
         $user_id_to_warn = (int)($_POST['user_id'] ?? 0);
         $reason = trim($_POST['reason'] ?? '');
-
         if ($user_id_to_warn > 0 && !empty($reason)) {
             $stmt = $conn->prepare("INSERT INTO user_warnings (user_id, issuer_id, reason) VALUES (?, ?, ?)");
             $stmt->bind_param("iis", $user_id_to_warn, $current_user_id, $reason);
@@ -356,6 +438,20 @@ switch ($action) {
             }
         } else {
             $response['message'] = 'Invalid discount percentage.';
+        }
+        break;
+        
+    case 'delete_user':
+        if (!$is_admin) { $response['message'] = 'You do not have permission to delete users.'; break; }
+        $user_id_to_delete = (int)($_POST['user_id'] ?? 0);
+        if ($user_id_to_delete > 0 && $user_id_to_delete != $current_user_id) {
+            $conn->query("DELETE FROM shout_reactions WHERE user_id = $user_id_to_delete");
+            $conn->query("DELETE FROM shouts WHERE user_id = $user_id_to_delete");
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id_to_delete);
+            $response = $stmt->execute() ? ['status' => 'success'] : ['message' => 'Failed to delete user.'];
+        } else {
+            $response['message'] = 'Invalid request. You cannot delete yourself.';
         }
         break;
 }

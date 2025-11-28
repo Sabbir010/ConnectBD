@@ -73,8 +73,8 @@ switch ($action) {
 
     case 'get_friends_list':
         $friends_query = "
-            SELECT u.id, u.display_name, u.photo_url, u.last_seen, u.last_activity, NOW() as server_time,
-                   (TIMESTAMPDIFF(SECOND, u.last_seen, NOW()) < 300) as is_online
+            SELECT u.id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.last_seen, u.last_activity, NOW() as server_time,
+                   (TIMESTAMPDIFF(SECOND, u.last_activity, NOW()) < 3600) as is_online, u.is_premium, u.premium_expires_at, u.is_verified, u.role, u.display_role, u.is_special
             FROM friends f
             JOIN users u ON u.id = IF(f.user_one_id = ?, f.user_two_id, f.user_one_id)
             WHERE (f.user_one_id = ? OR f.user_two_id = ?) AND f.status = 1
@@ -86,7 +86,7 @@ switch ($action) {
         $friends = $stmt_friends->get_result()->fetch_all(MYSQLI_ASSOC);
 
         $pending_query = "
-            SELECT u.id, u.display_name, u.photo_url
+            SELECT u.id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.is_premium, u.premium_expires_at, u.is_verified, u.role, u.display_role, u.is_special
             FROM friends f
             JOIN users u ON u.id = f.action_user_id
             WHERE (f.user_one_id = ? OR f.user_two_id = ?) AND f.status = 0 AND f.action_user_id != ?

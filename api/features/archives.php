@@ -34,7 +34,8 @@ switch ($action) {
 
     case 'get_all_archives':
         $category_filter = $_GET['category'] ?? 'all';
-        $query = "SELECT a.id, a.title, a.category, a.views, u.display_name 
+        // *** Updated SELECT ***
+        $query = "SELECT a.id, a.title, a.category, a.views, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special, u.member_status 
                   FROM archives a JOIN users u ON a.user_id = u.id 
                   WHERE a.status = 'approved'";
         if ($category_filter !== 'all') {
@@ -59,7 +60,8 @@ switch ($action) {
                 }
             }
 
-            $stmt_archive = $conn->prepare("SELECT a.*, u.display_name FROM archives a JOIN users u ON a.user_id = u.id WHERE a.id = ? AND (a.status = 'approved' OR a.user_id = ? OR ?)");
+            // *** Updated SELECT ***
+            $stmt_archive = $conn->prepare("SELECT a.*, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special, u.is_premium, u.role, u.display_role, u.member_status FROM archives a JOIN users u ON a.user_id = u.id WHERE a.id = ? AND (a.status = 'approved' OR a.user_id = ? OR ?)");
             $stmt_archive->bind_param("iii", $archive_id, $current_user_id, $is_staff);
             $stmt_archive->execute();
             $archive = $stmt_archive->get_result()->fetch_assoc();
@@ -68,7 +70,8 @@ switch ($action) {
                 $likes = $conn->query("SELECT COUNT(id) as count FROM archive_likes WHERE archive_id = $archive_id AND like_type = 'like'")->fetch_assoc()['count'];
                 $dislikes = $conn->query("SELECT COUNT(id) as count FROM archive_likes WHERE archive_id = $archive_id AND like_type = 'dislike'")->fetch_assoc()['count'];
                 
-                $replies = $conn->query("SELECT ar.*, u.display_name, u.photo_url, u.role, u.display_role FROM archive_replies ar JOIN users u ON ar.user_id = u.id WHERE ar.archive_id = $archive_id ORDER BY ar.created_at ASC")->fetch_all(MYSQLI_ASSOC);
+                // *** Updated SELECT for replies ***
+                $replies = $conn->query("SELECT ar.*, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_verified, u.is_special, u.is_premium, u.member_status FROM archive_replies ar JOIN users u ON ar.user_id = u.id WHERE ar.archive_id = $archive_id ORDER BY ar.created_at ASC")->fetch_all(MYSQLI_ASSOC);
 
                 $response = ['status' => 'success', 'archive' => $archive, 'likes' => $likes, 'dislikes' => $dislikes, 'replies' => $replies];
             } else {

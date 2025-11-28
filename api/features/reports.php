@@ -14,7 +14,6 @@ switch($action) {
         $reason = trim($_POST['reason'] ?? '');
         $allowed_types = ['shout', 'user', 'topic', 'archive', 'topic_reply', 'archive_reply'];
 
-        // *** নতুন ফিক্স: সমস্যা নির্ণয়ের জন্য বিস্তারিত এরর মেসেজ ***
         if (!in_array($type, $allowed_types)) {
             $response['message'] = "Invalid report type provided: '{$type}'";
         } elseif ($id <= 0) {
@@ -39,6 +38,8 @@ switch($action) {
             SELECT 
                 r.id, r.content_type, r.content_id, r.reason, r.created_at, 
                 reporter.display_name as reporter_name,
+                reporter.capitalized_username as reporter_capitalized_username,
+                reporter.capitalization_expires_at as reporter_expires_at,
                 r.reporter_id,
                 CASE
                     WHEN r.content_type = 'shout' THEN s.text
@@ -70,6 +71,13 @@ switch($action) {
             ORDER BY r.created_at DESC
         ";
         $reports = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+
+        foreach($reports as &$report) {
+            if (isset($report['reporter_capitalized_username']) && (!isset($report['reporter_expires_at']) || new DateTime() < new DateTime($report['reporter_expires_at']))) {
+                $report['reporter_name'] = $report['reporter_capitalized_username'];
+            }
+        }
+
         $response = ['status' => 'success', 'reports' => $reports];
         break;
 
@@ -99,7 +107,11 @@ switch($action) {
             SELECT 
                 r.id, r.content_type, r.content_id, r.reason, r.status, r.created_at, 
                 reporter.display_name as reporter_name,
+                reporter.capitalized_username as reporter_capitalized_username,
+                reporter.capitalization_expires_at as reporter_expires_at,
                 resolver.display_name as resolver_name,
+                resolver.capitalized_username as resolver_capitalized_username,
+                resolver.capitalization_expires_at as resolver_expires_at,
                 CASE
                     WHEN r.content_type = 'shout' THEN s.text
                     WHEN r.content_type = 'user' THEN reported_user.display_name
@@ -123,6 +135,16 @@ switch($action) {
             LIMIT 100
         ";
         $logs = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+
+        foreach($logs as &$log) {
+            if (isset($log['reporter_capitalized_username']) && (!isset($log['reporter_expires_at']) || new DateTime() < new DateTime($log['reporter_expires_at']))) {
+                $log['reporter_name'] = $log['reporter_capitalized_username'];
+            }
+            if (isset($log['resolver_capitalized_username']) && (!isset($log['resolver_expires_at']) || new DateTime() < new DateTime($log['resolver_expires_at']))) {
+                $log['resolver_name'] = $log['resolver_capitalized_username'];
+            }
+        }
+
         $response = ['status' => 'success', 'logs' => $logs];
         break;
 }

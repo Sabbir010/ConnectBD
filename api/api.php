@@ -2,8 +2,8 @@
 // api/api.php
 
 // --- STEP 1: SETUP ERROR HANDLING ---
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0); // Hide errors from public output
+error_reporting(0); // Stop logging all errors directly
 
 function jsonErrorHandler($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) { return false; }
@@ -32,7 +32,9 @@ require_once 'features/bot_functions.php';
 // --- STEP 2.5: POOR MAN'S CRON JOB TRIGGER ---
 ignore_user_abort(true);
 set_time_limit(0);
-include_once 'image_processor.php';
+
+// Username capitalization expiry check
+$conn->query("UPDATE users SET capitalized_username = NULL, capitalization_expires_at = NULL WHERE capitalization_expires_at IS NOT NULL AND capitalization_expires_at < NOW()");
 
 
 // --- STEP 3: GET ACTION & CURRENT USER ---
@@ -65,9 +67,9 @@ $shout_actions = ['post_shout', 'get_shouts', 'get_latest_shout', 'add_reaction'
 $user_actions = ['update_profile', 'get_site_stats', 'get_user_list', 'get_user_profile', 'update_user_role', 'delete_user', 'upload_avatar', 'update_activity'];
 $pm_actions = ['send_pm', 'get_inbox', 'get_conversation', 'get_latest_pm'];
 $staff_actions = ['get_pending_transactions', 'update_transaction_status', 'get_pending_archives', 'update_archive_status', 'get_all_users_for_staff', 'get_all_shouts', 'delete_shout_staff', 'get_user_content', 'get_all_topics_staff', 'get_all_archives_staff', 'get_all_transactions', 'get_hidden_staff'];
-$admin_actions = ['toggle_ban_status', 'update_user_role_admin', 'adjust_balance', 'issue_warning', 'get_user_warnings', 'clear_avatar', 'grant_premium_admin', 'remove_premium_admin', 'add_user_note', 'get_user_notes', 'get_login_history', 'get_transaction_history', 'impersonate_user', 'get_premium_settings', 'update_premium_settings', 'generate_coupon', 'adjust_gold_coins', 'reset_password', 'get_user_restrictions', 'toggle_restriction', 'get_themes_for_promo', 'generate_theme_promo_code'];
+$admin_actions = ['toggle_ban_status', 'update_user_role_admin', 'adjust_balance', 'issue_warning', 'get_user_warnings', 'clear_avatar', 'grant_premium_admin', 'remove_premium_admin', 'add_user_note', 'get_user_notes', 'get_login_history', 'get_transaction_history', 'impersonate_user', 'get_premium_settings', 'update_premium_settings', 'generate_coupon', 'adjust_gold_coins', 'reset_password', 'get_user_restrictions', 'toggle_restriction', 'get_themes_for_promo', 'generate_theme_promo_code', 'toggle_blue_tick', 'clear_data', 'toggle_special_status'];
 $transaction_actions = ['request_recharge', 'request_withdrawal'];
-$topic_actions = ['create_topic', 'get_all_topics', 'get_topic_details', 'post_topic_reply', 'edit_topic', 'delete_topic', 'toggle_pin_topic', 'toggle_close_topic', 'move_topic', 'shout_topic', 'get_topic_stats', 'toggle_replies_visibility', 'search_topics'];
+$topic_actions = ['create_topic', 'get_all_topics', 'get_topic_details', 'post_topic_reply', 'edit_topic', 'delete_topic', 'toggle_pin_topic', 'toggle_close_topic', 'move_topic', 'shout_topic', 'get_topic_stats', 'toggle_replies_visibility', 'search_topics', 'get_reply_details', 'edit_reply'];
 $archive_actions = ['create_archive', 'get_all_archives', 'get_archive_details', 'like_archive', 'post_archive_reply', 'delete_archive', 'edit_archive', 'delete_archive_reply', 'get_archive_details_by_reply'];
 $notification_actions = ['get_notifications', 'mark_notifications_read', 'get_unread_notification_count'];
 $gold_coin_actions = ['get_coin_status', 'grab_coin'];
@@ -86,6 +88,13 @@ $quiz_actions = ['get_quiz_counts', 'get_open_quizzes_announcement', 'get_all_qu
 $theme_actions = ['get_themes', 'set_theme', 'redeem_theme_promo_code'];
 $home_actions = ['get_home_details'];
 $bbcode_actions = ['parse_bbcode'];
+$cricket_actions = [
+    'get_cricket_zone_data', 'create_team', 'add_player', 'remove_player', 'get_teams_list',
+    'respond_to_team_invite', 'send_challenge', 'respond_to_challenge', 
+    'get_team_match_state', 'submit_toss', 'submit_toss_decision', 'submit_play'
+];
+$dashboard_actions = ['get_dashboard_stats'];
+$username_shop_actions = ['get_username_shop_info', 'change_username', 'change_username_color'];
 
 if (in_array($action, $auth_actions)) { require_once 'features/auth.php'; }
 elseif (in_array($action, $shout_actions)) { require_once 'features/shouts.php'; }
@@ -111,6 +120,9 @@ elseif (in_array($action, $quiz_actions)) { require_once 'features/quizzes.php';
 elseif (in_array($action, $theme_actions)) { require_once 'features/themes.php'; }
 elseif (in_array($action, $home_actions)) { require_once 'features/home.php'; }
 elseif (in_array($action, $bbcode_actions)) { require_once 'features/bbcode.php'; }
+elseif (in_array($action, $cricket_actions)) { require_once 'features/cricket.php'; }
+elseif (in_array($action, $dashboard_actions)) { require_once 'features/dashboard.php'; }
+elseif (in_array($action, $username_shop_actions)) { require_once 'features/username_shop.php'; }
 else { $response['message'] = "Unknown action: {$action}"; }
 
 // --- STEP 6: FINAL OUTPUT ---

@@ -45,6 +45,7 @@ switch ($action) {
                 $conn->query("UPDATE users SET total_topics = total_topics + 1 WHERE id = $current_user_id");
                 
                 parseTagsAndNotify($conn, $content, 'topic', $topic_id, $current_user_id);
+                addXP($conn, $current_user_id, 1);
 
                 $response = ['status' => 'success', 'message' => 'Topic created successfully.'];
             } else {
@@ -77,11 +78,13 @@ switch ($action) {
             if ($category_filter !== 'all' && in_array($category_filter, $allowed_categories)) {
                 $pinned_where_clause .= " AND t.category = '" . $conn->real_escape_string($category_filter) . "'";
             }
-            $pinned_topics_query = "SELECT t.id, t.title, t.category, t.created_at, t.is_closed, u.display_name FROM topics t JOIN users u ON t.user_id = u.id $pinned_where_clause ORDER BY t.last_reply_at DESC";
+            // *** Updated SELECT ***
+            $pinned_topics_query = "SELECT t.id, t.title, t.category, t.created_at, t.is_closed, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special, u.is_premium, u.premium_expires_at, u.role, u.display_role, u.member_status FROM topics t JOIN users u ON t.user_id = u.id $pinned_where_clause ORDER BY t.last_reply_at DESC";
             $pinned_topics = $conn->query($pinned_topics_query)->fetch_all(MYSQLI_ASSOC);
         }
         
-        $query = "SELECT t.id, t.title, t.category, t.created_at, t.is_closed, u.display_name FROM topics t JOIN users u ON t.user_id = u.id $where_clause ORDER BY t.last_reply_at DESC LIMIT ?, ?";
+        // *** Updated SELECT ***
+        $query = "SELECT t.id, t.title, t.category, t.created_at, t.is_closed, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special, u.is_premium, u.premium_expires_at, u.role, u.display_role, u.member_status FROM topics t JOIN users u ON t.user_id = u.id $where_clause ORDER BY t.last_reply_at DESC LIMIT ?, ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ii", $offset, $topics_per_page);
         $stmt->execute();
@@ -115,8 +118,9 @@ switch ($action) {
         $offset = ($page - 1) * $replies_per_page;
 
         if ($topic_id > 0) {
+            // *** Updated SELECT ***
             $stmt_topic = $conn->prepare("
-                SELECT t.*, u.display_name, u.photo_url, u.role, u.display_role, editor.display_name as editor_name 
+                SELECT t.*, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_verified, u.is_special, u.is_premium, u.premium_expires_at, u.member_status, editor.display_name as editor_name 
                 FROM topics t 
                 JOIN users u ON t.user_id = u.id 
                 LEFT JOIN users editor ON t.last_edited_by = editor.id
@@ -139,7 +143,8 @@ switch ($action) {
                 if ($topic['replies_hidden_by'] === NULL || $topic['replies_hidden_by'] == $current_user_id) {
                     $total_pages = ceil($total_replies / $replies_per_page);
                     if ($total_replies > 0) {
-                        $replies_query = "SELECT tr.*, u.display_name, u.photo_url, u.role, u.display_role, u.is_premium FROM topic_replies tr JOIN users u ON tr.user_id = u.id WHERE tr.topic_id = ? ORDER BY tr.created_at ASC LIMIT ?, ?";
+                        // *** Updated SELECT ***
+                        $replies_query = "SELECT tr.*, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at, u.is_verified, u.is_special, u.member_status FROM topic_replies tr JOIN users u ON tr.user_id = u.id WHERE tr.topic_id = ? ORDER BY tr.created_at ASC LIMIT ?, ?";
                         $stmt_replies = $conn->prepare($replies_query);
                         $stmt_replies->bind_param("iii", $topic_id, $offset, $replies_per_page);
                         $stmt_replies->execute();
@@ -182,6 +187,7 @@ switch ($action) {
                 $conn->query("UPDATE topics SET last_reply_at = NOW() WHERE id = $topic_id");
 
                 parseTagsAndNotify($conn, $content, 'topic_reply', $reply_id, $current_user_id);
+                addXP($conn, $current_user_id, 0.50);
                 
                 $response = ['status' => 'success', 'message' => 'Reply posted successfully.'];
                 
@@ -298,7 +304,7 @@ switch ($action) {
                     $response['message'] = 'Failed to update topic.';
                 }
             } else {
-                $response['message'] = 'You do not have permission or data is invalid.';
+                $response['message'] = 'You do not have permission to edit this topic. Only Staff or Premium Owners can edit.';
             }
         } else {
             $response['message'] = 'Topic not found.';
@@ -363,11 +369,13 @@ switch ($action) {
 
         $query = "";
         if ($in === 'topic_name') {
-            $query = "SELECT t.id, t.title, t.category, t.created_at, u.display_name FROM topics t JOIN users u ON t.user_id = u.id WHERE t.title LIKE ? ORDER BY t.created_at $order_by";
+            // *** Updated SELECT ***
+            $query = "SELECT t.id, t.title, t.category, t.created_at, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special FROM topics t JOIN users u ON t.user_id = u.id WHERE t.title LIKE ? ORDER BY t.created_at $order_by";
             $stmt = $conn->prepare($query);
             $stmt->bind_param("s", $search_text);
         } else {
-            $query = "SELECT t.id, t.title, t.category, t.created_at, u.display_name 
+            // *** Updated SELECT ***
+            $query = "SELECT t.id, t.title, t.category, t.created_at, u.display_name, u.capitalized_username, u.username_color, u.is_verified, u.is_special 
                       FROM topics t 
                       JOIN users u ON t.user_id = u.id 
                       WHERE t.title LIKE ? OR t.content LIKE ? OR t.id IN (SELECT topic_id FROM topic_replies WHERE content LIKE ?)
@@ -379,6 +387,81 @@ switch ($action) {
         $stmt->execute();
         $results = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $response = ['status' => 'success', 'results' => $results];
+        break;
+    
+    case 'get_reply_details':
+        $reply_id = (int)($_GET['reply_id'] ?? 0);
+        if ($reply_id > 0) {
+            $stmt = $conn->prepare("SELECT * FROM topic_replies WHERE id = ?");
+            $stmt->bind_param("i", $reply_id);
+            $stmt->execute();
+            $reply = $stmt->get_result()->fetch_assoc();
+            
+            if ($reply) {
+                $owner_id = $reply['user_id'];
+                
+                $user_perm_stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
+                $user_perm_stmt->bind_param("i", $current_user_id);
+                $user_perm_stmt->execute();
+                $current_user_role = $user_perm_stmt->get_result()->fetch_assoc()['role'];
+                
+                $is_staff = in_array($current_user_role, ['Admin', 'Senior Moderator', 'Moderator']);
+                $is_premium = isUserPremium($conn, $current_user_id);
+                $is_owner = ($current_user_id == $owner_id);
+
+                if ($is_staff || ($is_owner && $is_premium)) {
+                     $response = ['status' => 'success', 'reply' => $reply];
+                } else {
+                     $response['message'] = 'You do not have permission to edit this reply.';
+                }
+            } else {
+                $response['message'] = 'Reply not found.';
+            }
+        } else {
+            $response['message'] = 'Invalid Reply ID.';
+        }
+        break;
+
+    case 'edit_reply':
+        $reply_id = (int)($_POST['reply_id'] ?? 0);
+        $content = trim($_POST['content'] ?? '');
+
+        if ($reply_id > 0 && !empty($content)) {
+            $stmt = $conn->prepare("SELECT user_id FROM topic_replies WHERE id = ?");
+            $stmt->bind_param("i", $reply_id);
+            $stmt->execute();
+            $reply = $stmt->get_result()->fetch_assoc();
+
+            if ($reply) {
+                $owner_id = $reply['user_id'];
+                
+                $user_perm_stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
+                $user_perm_stmt->bind_param("i", $current_user_id);
+                $user_perm_stmt->execute();
+                $current_user_role = $user_perm_stmt->get_result()->fetch_assoc()['role'];
+
+                $is_staff = in_array($current_user_role, ['Admin', 'Senior Moderator', 'Moderator']);
+                $is_premium = isUserPremium($conn, $current_user_id);
+                $is_owner = ($current_user_id == $owner_id);
+
+                if ($is_staff || ($is_owner && $is_premium)) {
+                    $update_stmt = $conn->prepare("UPDATE topic_replies SET content = ? WHERE id = ?");
+                    $update_stmt->bind_param("si", $content, $reply_id);
+                    if ($update_stmt->execute()) {
+                        parseTagsAndNotify($conn, $content, 'topic_reply', $reply_id, $current_user_id);
+                        $response = ['status' => 'success', 'message' => 'Reply updated successfully.'];
+                    } else {
+                        $response['message'] = 'Failed to update reply.';
+                    }
+                } else {
+                    $response['message'] = 'You do not have permission to edit this reply.';
+                }
+            } else {
+                $response['message'] = 'Reply not found.';
+            }
+        } else {
+            $response['message'] = 'Invalid data.';
+        }
         break;
 }
 ?>

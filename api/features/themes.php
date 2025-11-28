@@ -36,7 +36,7 @@ switch ($action) {
         ];
         break;
 
-    case 'set_theme': // This action is now for BUYING a theme
+    case 'set_theme': // This action is now for BUYING/SETTING a theme
         $theme_id = (int)($_POST['theme_id'] ?? 0);
         if ($theme_id <= 0) {
             $response['message'] = 'Invalid theme ID.';
@@ -77,6 +77,9 @@ switch ($action) {
             $stmt->bind_param("ii", $theme_id, $current_user_id);
             $stmt->execute();
             
+            // Add XP for Theme Purchase/Set
+            addXP($conn, $current_user_id, 10); // Buy/Set Theme: 10 XP
+
             $conn->commit();
             $response = ['status' => 'success', 'message' => 'Theme applied successfully!'];
 
@@ -125,6 +128,9 @@ switch ($action) {
             $update_code_stmt->bind_param("ii", $current_user_id, $promo_code['id']);
             $update_code_stmt->execute();
             
+            // প্রোমো কোড দিয়ে থিম কিনলেও ১০ XP পাবে
+            addXP($conn, $current_user_id, 10); 
+
             $conn->commit();
             $response = ['status' => 'success', 'message' => 'Congratulations! The theme has been applied to your account for free.'];
         } catch (Exception $e) {

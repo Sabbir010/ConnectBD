@@ -7,7 +7,7 @@ if (!$is_staff) {
     exit;
 }
 
-// পাসওয়ার্ড এখানে সেট করা হয়েছে। আপনি চাইলে এটি পরিবর্তন করতে পারেন।
+// পাসওয়ার্ড কনফিগারেশন
 define('HIDDEN_STAFF_PASSWORD', 'ConnectBD@2024');
 
 switch ($action) {
@@ -71,12 +71,27 @@ switch ($action) {
             if ($transaction) {
                 $conn->begin_transaction();
                 try {
+                    // Recharge Approved Logic
                     if ($new_status === 'approved' && $transaction['type'] === 'Recharge') {
                         $conn->query("UPDATE users SET balance = balance + {$transaction['amount']} WHERE id = {$transaction['user_id']}");
+                        
+                        // XP Bonus: 10 Taka = 2 XP (Amount * 0.2)
+                        $xp_amount = $transaction['amount'] * 0.2;
+                        addXP($conn, $transaction['user_id'], $xp_amount);
                     }
+                    
+                    // Withdrawal Rejected Logic (Refund)
                     if ($new_status === 'rejected' && $transaction['type'] === 'Withdrawal') {
                         $conn->query("UPDATE users SET balance = balance + {$transaction['amount']} WHERE id = {$transaction['user_id']}");
                     }
+                    
+                    // Withdrawal Approved Logic (XP Bonus)
+                    if ($new_status === 'approved' && $transaction['type'] === 'Withdrawal') {
+                        // XP Bonus: 50 Taka = 5 XP (Amount * 0.1)
+                        $xp_amount = $transaction['amount'] * 0.1;
+                        addXP($conn, $transaction['user_id'], $xp_amount);
+                    }
+
                     $update_stmt = $conn->prepare("UPDATE transactions SET status = ?, updated_by = ? WHERE id = ?");
                     $update_stmt->bind_param("sii", $new_status, $current_user_id, $transaction_id);
                     $update_stmt->execute();

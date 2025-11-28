@@ -25,6 +25,7 @@ switch ($action) {
             $conn->query("UPDATE users SET total_shouts = total_shouts + 1 WHERE id = $current_user_id");
 
             parseTagsAndNotify($conn, $message, 'shout', $shout_id, $current_user_id);
+            addXP($conn, $current_user_id, 0.25);
 
             $response = ['status' => 'success'];
 
@@ -83,7 +84,8 @@ switch ($action) {
         if (!$current_user_id) { $response['message'] = 'You must be logged in.'; break; }
         $shout_id = (int)($_GET['shout_id'] ?? 0);
         if ($shout_id > 0) {
-            $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at
+            // *** Updated SELECT ***
+            $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at, u.is_verified, u.is_special, u.member_status
                       FROM shouts s
                       LEFT JOIN users u ON s.user_id = u.id
                       WHERE s.id = ?";
@@ -142,7 +144,8 @@ switch ($action) {
         $total_shouts = $total_shouts_result->fetch_assoc()['total'];
         $total_pages = ceil($total_shouts / $shouts_per_page);
 
-        $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at 
+        // *** Updated SELECT ***
+        $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at, u.is_verified, u.is_special, u.member_status
                   FROM shouts s 
                   LEFT JOIN users u ON s.user_id = u.id 
                   ORDER BY s.created_at DESC 
@@ -193,7 +196,8 @@ switch ($action) {
         break;
 
     case 'get_latest_shout':
-        $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at 
+        // *** Updated SELECT ***
+        $query = "SELECT s.id, s.text, s.created_at, u.id as user_id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at, u.is_verified, u.is_special, u.member_status
                   FROM shouts s 
                   LEFT JOIN users u ON s.user_id = u.id 
                   ORDER BY s.created_at DESC 
@@ -255,7 +259,8 @@ switch ($action) {
         $allowed_reactions = ['like', 'love', 'haha', 'sad', 'angry'];
 
         if ($shout_id > 0 && in_array($reaction_type, $allowed_reactions)) {
-            $query = "SELECT u.id, u.display_name, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at
+            // *** Updated SELECT ***
+            $query = "SELECT u.id, u.display_name, u.capitalized_username, u.username_color, u.photo_url, u.role, u.display_role, u.is_premium, u.premium_expires_at, u.is_verified, u.is_special, u.member_status
                       FROM shout_reactions sr
                       JOIN users u ON sr.user_id = u.id
                       WHERE sr.shout_id = ? AND sr.reaction = ?";
@@ -300,7 +305,7 @@ switch ($action) {
         $user_data = $user_res->fetch_assoc();
 
         if ($user_data && $user_data['is_premium']) {
-            if ($user_data['pinned_shout_id'] == $shout_id) { // If already pinned, unpin it
+            if ($user_data['pinned_shout_id'] == $shout_id) {
                 $stmt = $conn->prepare("UPDATE users SET pinned_shout_id = NULL WHERE id = ?");
                 $stmt->bind_param("i", $current_user_id);
                 if ($stmt->execute()) {
@@ -308,7 +313,7 @@ switch ($action) {
                 } else {
                     $response['message'] = 'Failed to unpin shout.';
                 }
-            } else { // Pin the new shout
+            } else {
                 $shout_owner_res = $conn->query("SELECT user_id FROM shouts WHERE id = $shout_id");
                 if ($shout_owner_res->num_rows > 0 && $shout_owner_res->fetch_assoc()['user_id'] == $current_user_id) {
                     $stmt = $conn->prepare("UPDATE users SET pinned_shout_id = ? WHERE id = ?");
