@@ -1,6 +1,5 @@
 // js/ui/goldCoinUI.js
 import { escapeHTML } from './coreUI.js';
-// import { fetchData_goldCoin } from './handlers/goldCoinHandlers.js'; // এই লাইনটি ডিলিট করুন বা কমেন্ট আউট করুন
 
 // --- Interval গুলোকে ট্র্যাক করার জন্য ভ্যারিয়েবল ---
 let countdownInterval = null;
@@ -49,7 +48,8 @@ export function renderGoldCoinPage(data) {
     // --- নতুন টাইমার শুরু করার আগে পুরোনোটা বন্ধ করা হচ্ছে ---
     clearGoldCoinTimers();
 
-    const { coin, user_stats, last_gainer } = data;
+    // can_see_timer রিসিভ করা হচ্ছে
+    const { coin, user_stats, last_gainer, can_see_timer } = data;
     
     if (!coin || !coin.server_time) {
         statusContainer.innerHTML = `<p class="text-lg text-yellow-700 mb-2">Could not retrieve coin status. Retrying...</p>`;
@@ -59,37 +59,53 @@ export function renderGoldCoinPage(data) {
     const currentTime = new Date(coin.server_time).getTime();
     const coinTime = new Date(coin.created_at).getTime();
 
-    // --- লাইভ কাউন্টডাউন টাইমার ---
+    // --- লজিক: কয়েন কি এখনও ভবিষ্যতে? নাকি গ্র্যাবের জন্য তৈরি? ---
     if (currentTime < coinTime) {
-        let timeLeft = Math.round((coinTime - currentTime) / 1000);
-        
-        statusContainer.innerHTML = `
-            <p class="text-lg text-gray-700 mb-2">Next coin will be available in:</p>
-            <p id="gold-coin-countdown" class="text-4xl font-bold text-violet-600">${timeLeft}s</p>
-            <button id="refresh-coin-status" class="mt-4 px-6 py-2 bg-gray-200 rounded-lg animate-pulse">Searching for coin...</button>
-        `;
-        
-        const countdownElement = document.getElementById('gold-coin-countdown');
-        countdownInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft >= 0 && countdownElement) {
-                countdownElement.textContent = `${timeLeft}s`;
-            } else {
-                clearInterval(countdownInterval);
-                // --- নিচের লাইনটি ডিলিট করা হয়েছে ---
-                // fetchData_goldCoin.status(); // এই লাইনটি সমস্যার কারণ ছিল
-            }
-        }, 1000);
+        // --- এখনও সময় বাকি আছে ---
+
+        if (can_see_timer) {
+            // ১. যদি ইউজার প্রিমিয়াম বা স্টাফ হয় -> টাইমার দেখবে
+            let timeLeft = Math.round((coinTime - currentTime) / 1000);
+            
+            statusContainer.innerHTML = `
+                <p class="text-lg text-gray-700 mb-2">Next coin will be available in:</p>
+                <p id="gold-coin-countdown" class="text-4xl font-bold text-violet-600">${timeLeft}s</p>
+                <button id="refresh-coin-status" class="mt-4 px-6 py-2 bg-gray-200 rounded-lg animate-pulse">Searching for coin...</button>
+            `;
+            
+            const countdownElement = document.getElementById('gold-coin-countdown');
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft >= 0 && countdownElement) {
+                    countdownElement.textContent = `${timeLeft}s`;
+                } else {
+                    clearInterval(countdownInterval);
+                    // সময় শেষ হলে অটোমেটিক হ্যান্ডলার আবার কল হবে (main loop দ্বারা)
+                }
+            }, 1000);
+        } else {
+            // ২. যদি সাধারণ ইউজার হয় -> টাইমার দেখবে না
+            statusContainer.innerHTML = `
+                <p class="text-lg text-gray-600 mb-2 font-semibold">Mystery Coin Incoming...</p>
+                <div class="animate-pulse text-violet-500 text-5xl my-4">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <p class="text-sm text-gray-500">Wait for the magic moment!</p>
+                <button id="refresh-coin-status" class="mt-4 px-6 py-2 bg-gray-200 rounded-lg">Check Status</button>
+            `;
+        }
 
     } else {
+        // --- সময় হয়ে গেছে! (সবার জন্য Grab বাটন) ---
         statusContainer.innerHTML = `
             <p class="text-2xl text-green-600 font-bold mb-4">A wild Gold Coin has appeared!</p>
-            <button id="grab-coin-btn" data-coin-id="${coin.id}" class="px-10 py-4 bg-yellow-500 text-white font-bold text-xl rounded-lg shadow-lg transform hover:scale-110 transition-transform">
+            <button id="grab-coin-btn" data-coin-id="${coin.id}" class="px-10 py-4 bg-yellow-500 text-white font-bold text-xl rounded-lg shadow-lg transform hover:scale-110 transition-transform animate-bounce">
                 Grab It!
             </button>
         `;
     }
 
+    // --- ইউজার স্ট্যাটাস আপডেট ---
     if(user_stats) {
         totalCoinsEl.textContent = user_stats.total_coins;
         grabsTodayEl.textContent = `${user_stats.grabs_last_24h} / 10`;

@@ -3,8 +3,8 @@ import { apiRequest, API_URL } from '../api.js';
 import { renderThemeShop, renderActionStatus } from '../ui.js';
 
 export const fetchData_themes = {
-    shop: async (type) => {
-        const data = await apiRequest(`${API_URL}?action=get_themes&type=${type}`);
+    shop: async (type, page = 1) => {
+        const data = await apiRequest(`${API_URL}?action=get_themes&type=${type}&page=${page}`);
         if (data.status === 'success') {
             renderThemeShop(data, type);
         }
@@ -12,8 +12,6 @@ export const fetchData_themes = {
 };
 
 export async function handleThemeClicks(target) {
-    // Navigation logic is handled by handlers.js for consistency.
-
     const themeCard = target.closest('.theme-card');
     if (themeCard) {
         const themeId = themeCard.dataset.themeId;
@@ -27,16 +25,27 @@ export async function handleThemeClicks(target) {
         if (data.status === 'success') {
             document.dispatchEvent(new Event('userUpdated'));
             
-            // Refresh the current theme view to show the new selection
-            const siteThemesContainer = document.querySelector('div[id="site_themes"]');
-            const profileThemesContainer = document.querySelector('div[id="profile_themes"]');
-
-            if (siteThemesContainer) {
-                fetchData_themes.shop('site');
-            } else if (profileThemesContainer) {
-                fetchData_themes.shop('profile');
+            const currentPage = document.querySelector('.theme-page-link.bg-violet-600')?.dataset.page || 1;
+            const viewHeader = document.querySelector('.glass-card h2');
+            if (viewHeader) {
+                const headerText = viewHeader.textContent;
+                if (headerText.includes('Site Themes')) {
+                    fetchData_themes.shop('site', currentPage);
+                } else if (headerText.includes('Profile Themes')) {
+                    fetchData_themes.shop('profile', currentPage);
+                } else if (headerText.includes('Premium Themes')) {
+                    fetchData_themes.shop('premium', currentPage);
+                }
             }
         }
+        return true;
+    }
+
+    const pageLink = target.closest('.theme-page-link');
+    if (pageLink) {
+        const page = pageLink.dataset.page;
+        const type = pageLink.dataset.type;
+        fetchData_themes.shop(type, page);
         return true;
     }
     

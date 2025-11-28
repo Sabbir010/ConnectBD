@@ -93,6 +93,22 @@ async function renderToolContent(toolId, userId, contentContainer) {
                     <button class="action-btn mt-2 bg-red-500 text-white p-2 rounded" data-action="toggle_ban_status" data-user-id="${userId}">${banText}</button>
                 </div>`;
             break;
+        case 'toggle_blue_tick':
+            const blueTickText = user.is_verified ? 'Remove Blue Tick' : 'Grant Blue Tick';
+            contentContainer.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded-lg max-w-md mx-auto text-center">
+                    <p>Current Status: <strong>${user.is_verified ? 'Verified' : 'Not Verified'}</strong></p>
+                    <button class="action-btn mt-2 bg-sky-500 text-white p-2 rounded" data-action="toggle_blue_tick" data-user-id="${userId}">${blueTickText}</button>
+                </div>`;
+            break;
+        case 'toggle_special_status':
+            const specialStatusText = user.is_special ? 'Remove Special Status' : 'Grant Special Status';
+            contentContainer.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded-lg max-w-md mx-auto text-center">
+                    <p>Current Status: <strong>${user.is_special ? 'Special' : 'Normal'}</strong></p>
+                    <button class="action-btn mt-2 bg-red-700 text-white p-2 rounded" data-action="toggle_special_status" data-user-id="${userId}">${specialStatusText}</button>
+                </div>`;
+            break;
         case 'change_role':
             const isHiddenChecked = user.display_role === 'Member' && user.role !== 'Member';
             contentContainer.innerHTML = `
@@ -293,6 +309,25 @@ async function renderToolContent(toolId, userId, contentContainer) {
 }
 
 export async function handleStaffClicks(target, currentUser) {
+    const cleanupBtn = target.closest('.data-cleanup-btn');
+    if (cleanupBtn) {
+        const type = cleanupBtn.dataset.type;
+        const typeName = type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        if (confirm(`Are you absolutely sure you want to delete all ${typeName}? This action cannot be undone.`)) {
+            if (confirm(`FINAL CONFIRMATION: This will permanently delete all ${typeName}. Proceed?`)) {
+                const formData = new FormData();
+                formData.append('action', 'clear_data');
+                formData.append('type', type);
+                formData.append('confirm', 'true');
+
+                const data = await apiRequest(API_URL, { method: 'POST', body: formData });
+                alert(data.message || 'Action completed.');
+            }
+        }
+        return true;
+    }
+    
     if (target.id === 'generate-promo-code-btn') {
         const themeSelect = document.getElementById('theme-select-for-promo');
         const themeId = themeSelect.value;

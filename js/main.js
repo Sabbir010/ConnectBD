@@ -42,12 +42,20 @@ function showAppView(user) {
     }
 }
 
+// *** আপডেট করা ফাংশন ***
 async function updateUserActivity(pageName) {
     if (!currentUser) return;
     const formData = new FormData();
     formData.append('action', 'update_activity');
     formData.append('page_name', pageName);
-    await apiRequest(API_URL, { method: 'POST', body: formData });
+    
+    // রিকোয়েস্টের রেসপন্স চেক করা হচ্ছে
+    const response = await apiRequest(API_URL, { method: 'POST', body: formData });
+    
+    // যদি সফল হয়, তবে userUpdated ইভেন্ট ফায়ার করুন যাতে স্ট্যাটাস রিফ্রেশ হয়
+    if (response && response.status === 'success') {
+        document.dispatchEvent(new Event('userUpdated'));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

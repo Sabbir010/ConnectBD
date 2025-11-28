@@ -6,12 +6,15 @@ export const API_URL = '/api/api.php';
 /**
  * API সার্ভারে ডেটা পাঠানোর জন্য একটি সাধারণ ফাংশন।
  * @param {string} url - API এন্ডপয়েন্টের URL।
- * @param {object} options - fetch() ফাংশনের জন্য অপশন (e.g., method, body)।
+ * @param {object} options - fetch() ফাংশশনের জন্য অপশন (e.g., method, body)।
  * @returns {Promise<object>} - সার্ভার থেকে প্রাপ্ত JSON ডেটা।
  */
 export async function apiRequest(url, options = {}) {
     // ক্রেডেনশিয়াল (যেমন কুকি) পাঠানোর জন্য এই অপশনটি জরুরি
     options.credentials = 'include'; 
+
+    // *** চূড়ান্ত সমাধান: ব্রাউজার যেন পুরোনো ডেটা জমা না রাখে (cache) তা নিশ্চিত করা হচ্ছে ***
+    options.cache = 'no-store';
 
     try {
         const response = await fetch(url, options);

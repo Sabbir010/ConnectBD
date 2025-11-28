@@ -1,13 +1,13 @@
 // js/handlers/userHandlers.js
 import { apiRequest, API_URL } from '/js/api.js';
-import { 
+import {
     showView, renderUserProfile, renderAdvanceProfile, renderUserContent,
-    renderLatestPmNotification, renderInbox, renderConversation, renderActionStatus, 
-    renderNotifications, 
+    renderLatestPmNotification, renderInbox, renderConversation, renderActionStatus,
+    renderNotifications,
     renderTopicDetails, renderArchiveDetails,
     renderHomePermissions,
     generateUserDisplay,
-    renderUserList 
+    renderUserList
 } from '/js/ui.js';
 import { fetchData_shouts } from '/js/handlers/shoutHandlers.js';
 import { fetchData_topics } from '/js/handlers/topicHandlers.js';
@@ -19,9 +19,9 @@ export const fetchData_user = {
     siteStats: async () => {
         const statsContainer = document.getElementById('site-stats-container');
         if (!statsContainer) return;
-        
+
         const data = await apiRequest(`${API_URL}?action=get_site_stats`);
-        
+
         if (data.status === 'success' && data.stats) {
             if (!document.getElementById('site-stats-container')) return;
 
@@ -29,25 +29,26 @@ export const fetchData_user = {
                 const element = document.getElementById(id);
                 if (element) element.textContent = value;
             };
-            
+
             updateElementText('stats-total-online', data.stats.total_online || 0);
             updateElementText('stats-male-online', data.stats.male_online || 0);
             updateElementText('stats-female-online', data.stats.female_online || 0);
             updateElementText('stats-premium-online', data.stats.premium_online || 0);
             updateElementText('stats-staff-online', data.stats.staff_online || 0);
-            
+
             const newestMemberEl = document.getElementById('stats-newest-member');
-            if (newestMemberEl && data.stats.newest_member_id) {
+            if (newestMemberEl && data.stats.newest_member_data) {
                 const newestUser = {
-                    id: data.stats.newest_member_id,
-                    display_name: data.stats.newest_member,
-                    is_premium: data.stats.newest_member_is_premium,
-                    premium_expires_at: null,
-                    role: 'Member' 
+                    id: data.stats.newest_member_data.id,
+                    display_name: data.stats.newest_member_data.display_name,
+                    is_premium: data.stats.newest_member_data.is_premium,
+                    premium_expires_at: data.stats.newest_member_data.premium_expires_at,
+                    is_verified: data.stats.newest_member_data.is_verified,
+                    role: 'Member'
                 };
                  newestMemberEl.innerHTML = generateUserDisplay(newestUser, false);
             } else if (newestMemberEl) {
-                newestMemberEl.textContent = data.stats.newest_member || 'N/A';
+                newestMemberEl.textContent = 'N/A';
             }
             updateElementText('stats-active-today', data.stats.active_today || 0);
         }
@@ -96,7 +97,7 @@ export async function handleUserClicks(target, currentUser) {
     if (userLink) {
         const userId = userLink.dataset.userId;
         if (!userId || userId === '0') return true;
-        
+
         await showView('user_profile');
         const user = await fetchData_user.profileData(userId);
         if (user) {
@@ -107,21 +108,21 @@ export async function handleUserClicks(target, currentUser) {
         return true;
     }
 
-    const statsLink = target.closest('.stats-link, .user-name-link');
+    const statsLink = target.closest('.stats-link');
     if(statsLink){
         const listType = statsLink.dataset.listType;
         if (listType) {
             const title = statsLink.parentElement.textContent.split(':')[0].trim();
             await showView('user_list');
-            
+
             const userListTitle = document.getElementById('user-list-title');
             const userListContainer = document.getElementById('user-list-container');
-            
+
             if (userListTitle) userListTitle.textContent = `Member List: ${title}`;
             if (userListContainer) userListContainer.innerHTML = '<p>Loading...</p>';
 
             const data = await apiRequest(`${API_URL}?action=get_user_list&type=${listType}`);
-            
+
             if (userListContainer) {
                 userListContainer.innerHTML = '';
                 if (data.status === 'success' && data.users.length > 0) {
@@ -171,7 +172,7 @@ export async function handleUserClicks(target, currentUser) {
         }
         return true;
     }
-    
+
     const backToProfileBtn = target.closest('.back-to-profile');
     if(backToProfileBtn){
         const userId = backToProfileBtn.dataset.userId || currentUser.id;
@@ -180,7 +181,7 @@ export async function handleUserClicks(target, currentUser) {
         if(user) renderUserProfile(user, currentUser);
         return true;
     }
-    
+
     if (target.id === 'go-to-advance-profile' || target.id === 'back-to-advance-profile') {
         const userId = target.dataset.userId;
         await showView('advance_profile');
@@ -206,7 +207,7 @@ export async function handleUserClicks(target, currentUser) {
         }
         return true;
     }
-    
+
     if (target.id === 'recharge-btn') {
         await showView('recharge');
         return true;
@@ -265,7 +266,7 @@ export async function handleUserClicks(target, currentUser) {
     if (notificationItem && notificationItem.dataset.view) {
         const view = notificationItem.dataset.view;
         const id = notificationItem.dataset.id;
-        
+
         await showView(view);
         if (view === 'topic_view') {
             const data = await fetchData_topics.topicDetails(id);
@@ -287,7 +288,7 @@ export async function handleUserClicks(target, currentUser) {
         }
         return true;
     }
-    
+
     return false;
 }
 
@@ -303,17 +304,17 @@ export async function handleUserSubmits(form, formData, currentUser) {
     if (form.id === 'reply-pm-form') {
         const receiverId = formData.get('receiver_id');
         const messageText = formData.get('message');
-        
+
         if (!receiverId || receiverId == '0') {
              alert('Error: Could not identify the message recipient. Please try opening the conversation again.');
              return true;
         }
         if (!messageText || !messageText.trim()) return true;
-        
+
         formData.append('action', 'send_pm');
-        
+
         const data = await apiRequest(API_URL, { method: 'POST', body: formData });
-        
+
         if (data.status === 'success') {
             form.reset();
             const newData = await apiRequest(`${API_URL}?action=get_conversation&with_user_id=${receiverId}`);
@@ -323,10 +324,10 @@ export async function handleUserSubmits(form, formData, currentUser) {
         }
         return true;
     }
-    
+
     if(form.id === 'edit-profile-form') {
         formData.append('action', 'update_profile');
-        
+
         const birthdayInput = form.querySelector('#edit-birthday');
         if (birthdayInput && birthdayInput.value) {
             formData.set('birthday', birthdayInput.value);
@@ -344,12 +345,12 @@ export async function handleUserSubmits(form, formData, currentUser) {
         formData.append('action', 'upload_avatar');
         const statusEl = document.getElementById('avatar-upload-status');
         if(statusEl) statusEl.textContent = 'Uploading...';
-        
+
         const data = await apiRequest(API_URL, { method: 'POST', body: formData });
-        
+
         if (data.status === 'success') {
             if(statusEl) statusEl.textContent = data.message;
-            document.dispatchEvent(new Event('userUpdated')); 
+            document.dispatchEvent(new Event('userUpdated'));
         } else {
             if(statusEl) statusEl.textContent = data.message || 'Upload failed.';
         }
@@ -362,7 +363,7 @@ export async function handleUserSubmits(form, formData, currentUser) {
         await renderActionStatus({status: data.status, message: data.message, backView: 'user_profile', backViewId: currentUser.id});
         return true;
     }
-    
+
     if (form.id === 'withdrawal-form') {
         formData.append('action', 'request_withdrawal');
         const data = await apiRequest(API_URL, { method: 'POST', body: formData });
@@ -370,6 +371,6 @@ export async function handleUserSubmits(form, formData, currentUser) {
         if (data.status === 'success') document.dispatchEvent(new Event('userUpdated'));
         return true;
     }
-    
+
     return false;
 }

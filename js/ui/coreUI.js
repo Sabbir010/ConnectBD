@@ -40,7 +40,6 @@ export async function showView(viewName, id = null, subView = null) {
     }
 }
 
-
 export function escapeHTML(str) {
     if (typeof str !== 'string' || str === null) return '';
     const p = document.createElement('p');
@@ -57,7 +56,35 @@ export function showAppView(user) {
     if(elements.authContainer) elements.authContainer.style.display = 'none';
     if(elements.appContainer) elements.appContainer.style.display = 'block';
     
-    elements.headerUserName.textContent = user.display_name;
+    const displayName = user.capitalized_username || user.display_name;
+    
+    // ক্লাস এবং স্টাইল রিসেট
+    elements.headerUserName.className = '';
+    elements.headerUserName.style.color = '';
+    
+    let nameClass = '';
+    let nameStyle = '';
+    const isPremium = user.is_premium && user.premium_expires_at && new Date(user.premium_expires_at) > new Date();
+
+    // ১. স্পেশাল স্ট্যাটাস (নামের রং লাল হবে)
+    if (user.is_special == 1) {
+        nameClass = 'special-user-name';
+    } 
+    // ২. কাস্টম কালার (যদি স্পেশাল না হয়)
+    else if (user.username_color) {
+        nameStyle = `color: ${escapeHTML(user.username_color)};`;
+    } 
+    // ৩. প্রিমিয়াম স্ট্যাটাস
+    else if (isPremium) {
+        nameClass = 'premium-username';
+    }
+    
+    if (nameClass) elements.headerUserName.classList.add(nameClass);
+    if (nameStyle) elements.headerUserName.style.cssText = nameStyle;
+
+    const verifiedBadge = (user.is_verified == 1) ? '<i class="fas fa-check-circle text-blue-500 ml-1" style="font-size: 0.8rem;"></i>' : '';
+
+    elements.headerUserName.innerHTML = `<span>${escapeHTML(displayName)}</span>${verifiedBadge}`;
     elements.headerUserAvatar.src = user.photo_url || DEFAULT_AVATAR_URL;
 }
 
@@ -97,19 +124,38 @@ export function generateUserDisplay(user, withTitle = true) {
     if (!user) return '';
 
     const isPremium = user.is_premium && user.premium_expires_at && new Date(user.premium_expires_at) > new Date();
-    const nameClass = isPremium ? 'premium-username' : '';
-    let title = '';
+    const displayName = user.capitalized_username || user.display_name;
     
+    let nameColorStyle = '';
+    let nameClass = '';
+
+    // Color Priority: Special > Custom Color > Premium
+    if (user.is_special == 1) {
+        nameClass = 'special-user-name'; 
+    } else if (user.username_color) {
+        nameColorStyle = `style="color: ${escapeHTML(user.username_color)};"`;
+    } else if (isPremium) {
+        nameClass = 'premium-username';
+    }
+    
+    let title = '';
     const userId = user.user_id || user.id;
     const displayRole = user.display_role || user.role;
+    const blueTick = (user.is_verified == 1) ? ' <i class="fas fa-check-circle blue-tick-icon text-blue-500" title="Verified"></i>' : '';
 
     if (withTitle) {
+        // Title Priority: Role/Staff > Premium > Member Status (Level Title)
+        // Note: is_special does NOT overwrite the title, only the color.
+        
         if (displayRole && displayRole !== 'Member') {
             title = ` (${escapeHTML(displayRole)}!)`;
         } else if (isPremium) {
             title = ' (Premium User!)';
+        } else if (user.member_status) {
+            // For regular members, show their level status
+            title = ` (${escapeHTML(user.member_status)})`;
         }
     }
 
-    return `<a href="#" class="user-name-link ${nameClass}" data-user-id="${userId}">${escapeHTML(user.display_name)}</a><span class="font-semibold">${title}</span>`;
+    return `<a href="#" class="user-name-link ${nameClass}" data-user-id="${userId}" ${nameColorStyle}>${escapeHTML(displayName)}</a>${blueTick}<span class="font-semibold">${title}</span>`;
 }

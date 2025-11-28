@@ -1,0 +1,60 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Username Shop</h2>
+        <button id="back-to-profile-from-shop" class="text-violet-600 font-semibold hover:underline">&larr; Back to Profile</button>
+    </div>
+
+    <div class="space-y-8">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Username Capitalization</h3>
+            <div class="space-y-6">
+                <div class="p-4 bg-white/50 rounded-lg">
+                    <h4 class="font-semibold text-lg">Capital Letter Change (Monthly)</h4>
+                    <p class="text-sm text-gray-600 mt-1"> প্রতি মাসে আপনার নামের অক্ষর ক্যাপিটাল করুন। মেয়াদ শেষ হলে নাম স্বয়ংক্রিয়ভাবে ছোট হাতের হয়ে যাবে।</p>
+                    <div class="mt-4">
+                        <label class="block font-medium">Enter New Username:</label>
+                        <input type="text" id="monthly-username-input" class="w-full p-2 border rounded-lg input-field" placeholder="new username">
+                        <p class="mt-2 font-semibold">Cost: <span id="monthly-cost-display">0 TK</span></p>
+                        <button class="username-change-btn mt-2 w-full py-2 bg-violet-600 text-white rounded-lg" data-package="monthly">Buy for 1 Month</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-white/50 rounded-lg">
+                    <h4 class="font-semibold text-lg">Capital Letter Change (Yearly)</h4>
+                    <p class="text-sm text-gray-600 mt-1">এক বছরের জন্য আপনার নামের অক্ষর ক্যাপিটাল করুন।</p>
+                    <div class="mt-4">
+                        <label class="block font-medium">Enter New Username:</label>
+                        <input type="text" id="yearly-username-input" class="w-full p-2 border rounded-lg input-field" placeholder="new username">
+                        <p class="mt-2 font-semibold">Cost: <span id="yearly-cost-display">0 TK</span></p>
+                        <button class="username-change-btn mt-2 w-full py-2 bg-violet-600 text-white rounded-lg" data-package="yearly">Buy for 1 Year</button>
+                    </div>
+                </div>
+                 <div class="p-4 bg-white/50 rounded-lg">
+                    <h4 class="font-semibold text-lg">Username Change (Small Letters)</h4>
+                    <p class="text-sm text-gray-600 mt-1">আপনার বর্তমান ইউজারনেম স্থায়ীভাবে পরিবর্তন করুন (শুধুমাত্র ছোট হাতের অক্ষরে)।</p>
+                    <div class="mt-4">
+                        <label class="block font-medium">Enter New Username:</label>
+                        <input type="text" id="permanent-username-input" class="w-full p-2 border rounded-lg input-field" placeholder="new username">
+                        <p class="mt-2 font-semibold">Cost: <span id="permanent-cost-display">25 TK</span></p>
+                        <button class="username-change-btn mt-2 w-full py-2 bg-violet-600 text-white rounded-lg" data-package="permanent">Change Permanently</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Username Color</h3>
+            <div class="p-4 bg-white/50 rounded-lg">
+                <p class="text-sm text-gray-600">আপনার ইউজারনেমের জন্য একটি সুন্দর রঙ বাছাই করুন। এটি স্থায়ীভাবে থাকবে।</p>
+                <p class="text-sm mt-2">রঙ বাছাই করার জন্য ভিজিট করুন: <a href="https://htmlcolorcodes.com/" target="_blank" class="text-blue-600 font-bold">htmlcolorcodes.com</a></p>
+                <div class="mt-4">
+                    <label class="block font-medium">Enter Color Code:</label>
+                    <input type="text" id="color-code-input" class="w-full p-2 border rounded-lg input-field" placeholder="#FF5733">
+                    <div class="mt-4 space-y-2">
+                         <button id="buy-color-balance" class="w-full py-2 bg-green-600 text-white rounded-lg">Buy with Balance (<span id="color-cost-balance">30 TK</span>)</button>
+                         <button id="buy-color-gold" class="w-full py-2 bg-yellow-500 text-white rounded-lg">Buy with Gold (<span id="color-cost-gold">200 Gold</span>)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

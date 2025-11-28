@@ -2,7 +2,8 @@
 import { apiRequest, API_URL } from '../api.js';
 import { 
     showView, renderTopicList, renderTopicDetails, 
-    renderTopicOptions, renderActionStatus, renderTopicStats
+    renderTopicOptions, renderActionStatus, renderTopicStats,
+    renderTopicReplyEditForm // *** এটি ইম্পোর্ট করা আবশ্যক ***
 } from '../ui.js';
 
 export const fetchData_topics = {
@@ -35,6 +36,16 @@ export const fetchData_topics = {
         const data = await apiRequest(`${API_URL}?action=get_topic_stats`);
         if (data.status === 'success') {
             renderTopicStats(data.stats);
+        }
+    },
+    // *** নতুন: রিপ্লাইয়ের ডিটেইলস আনার ফাংশন ***
+    replyDetails: async (replyId) => {
+        const data = await apiRequest(`${API_URL}?action=get_reply_details&reply_id=${replyId}`);
+        if (data.status === 'success') {
+            return data;
+        } else {
+            alert(data.message || 'Could not load reply details.');
+            return null;
         }
     }
 };
@@ -124,6 +135,27 @@ export async function handleTopicClicks(target, currentUser) {
         return true;
     }
 
+    // *** নতুন: এডিট বাটন ক্লিক হ্যান্ডলার ***
+    if (target.classList.contains('edit-reply-btn')) {
+        const replyId = target.dataset.replyId;
+        history.pushState(null, '', `/topic_reply_edit?id=${replyId}`);
+        await showView('topic_reply_edit');
+        const data = await fetchData_topics.replyDetails(replyId);
+        if (data && data.reply) {
+            renderTopicReplyEditForm(data.reply);
+        }
+        return true;
+    }
+
+    // *** নতুন: এডিট পেজ থেকে ফিরে আসার বাটন ***
+    if (target.id === 'back-to-topic-from-edit') {
+        const topicId = target.dataset.topicId;
+        await showView('topic_view');
+        const data = await fetchData_topics.topicDetails(topicId);
+        if(data) renderTopicDetails(data, currentUser);
+        return true;
+    }
+
     const topicId = target.dataset.topicId;
     let action = '';
     if (target.id === 'toggle-pin-topic-btn') action = 'toggle_pin_topic';
@@ -179,6 +211,23 @@ export async function handleTopicSubmits(form, formData, currentUser) {
             alert('Topic updated successfully!');
             const topicData = await fetchData_topics.topicDetails(topicId);
             if (topicData) renderTopicOptions(topicData.topic, currentUser);
+        } else {
+            alert(data.message || 'Update failed.');
+        }
+        return true;
+    }
+
+    // *** নতুন: রিপ্লাই এডিট ফর্ম সাবমিট হ্যান্ডলার ***
+    if (form.id === 'topic-reply-edit-form') {
+        formData.append('action', 'edit_reply');
+        const topicId = form.elements.topic_id.value;
+        const data = await apiRequest(API_URL, { method: 'POST', body: formData });
+        
+        if (data.status === 'success') {
+            alert('Reply updated successfully!');
+            await showView('topic_view');
+            const topicData = await fetchData_topics.topicDetails(topicId);
+            if (topicData) renderTopicDetails(topicData, currentUser);
         } else {
             alert(data.message || 'Update failed.');
         }

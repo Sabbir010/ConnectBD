@@ -214,6 +214,8 @@ export function renderAdminTools(user) {
 
     const tools = [
         { id: 'ban_user', title: 'Ban/Unban User', icon: 'fa-user-slash', color: 'border-red-500' },
+        { id: 'toggle_blue_tick', title: 'Toggle Blue Tick', icon: 'fa-check-circle', color: 'border-sky-500' },
+        { id: 'toggle_special_status', title: 'Toggle Special Status', icon: 'fa-star-of-life', color: 'border-red-700' },
         { id: 'change_role', title: 'Change Role', icon: 'fa-user-shield', color: 'border-purple-500' },
         { id: 'adjust_balance', title: 'Adjust Balance', icon: 'fa-wallet', color: 'border-green-500' },
         { id: 'adjust_gold_coins', title: 'Adjust Gold Coins', icon: 'fa-coins', color: 'border-yellow-500' },

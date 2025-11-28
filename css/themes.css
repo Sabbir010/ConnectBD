@@ -16,128 +16,260 @@ body.theme-site-default {
     opacity: 1;
 }
 
+/* --- Special User Name Style --- */
+.special-user-name {
+    color: #c53030 !important; /* Dark Red */
+    font-weight: bold !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
 /* ======================================================================== */
 /* ============================ SITE THEMES =============================== */
 /* ======================================================================== */
 
-/* --- Site Theme: Dark Mode --- */
-body.theme-site-dark { background: #1a202c; color: #e2e8f0; }
-.theme-site-dark .glass-card { background: rgba(45, 55, 72, 0.7); border-color: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
-.theme-site-dark .text-gray-800, .theme-site-dark .text-gray-700 { color: #e2e8f0 !important; }
-.theme-site-dark .text-gray-600, .theme-site-dark .text-gray-500 { color: #a0aec0 !important; }
-.theme-site-dark .text-violet-600, .theme-site-dark .text-blue-600 { color: #a78bfa !important; }
-.theme-site-dark .input-field { background: rgba(26, 32, 44, 0.8); color: white; border-color: #4a5568; }
-.theme-site-dark.dark-theme-placeholder ::placeholder { color: #a0aec0 !important; opacity: 1; }
-.theme-site-dark button:not([class*="bg-"]) { background: #4a5568; color: white; }
-.theme-site-dark .bg-white { background-color: #2d3748 !important; }
-.theme-site-dark .bg-gray-50 { background-color: #1a202c !important; }
-.theme-site-dark .hover\:bg-gray-100:hover { background-color: #4a5568 !important; }
-.theme-site-dark .border, .theme-site-dark .border-t, .theme-site-dark .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #4a5568 !important; }
-.theme-site-dark header { background-color: rgba(45, 55, 72, 0.8) !important; }
+/* --- Base Dark Theme Styles (for reusability) --- */
+body.theme-site-dark, body.theme-site-forest, body.theme-site-graphite, body.theme-site-coffee,
+body.theme-site-midnight, body.theme-site-indigo, body.theme-site-charcoal,
+body.theme-site-deepsea, body.theme-site-wine, body.theme-site-pinegreen, body.theme-site-ruby,
+body.theme-site-crimson, body.theme-site-maroon, body.theme-site-steel {
+    color: #e2e8f0;
+}
+.theme-site-dark .glass-card, .theme-site-forest .glass-card, .theme-site-graphite .glass-card, .theme-site-coffee .glass-card,
+.theme-site-midnight .glass-card, .theme-site-indigo .glass-card, .theme-site-charcoal .glass-card,
+.theme-site-deepsea .glass-card, .theme-site-wine .glass-card, .theme-site-pinegreen .glass-card, .theme-site-ruby .glass-card,
+.theme-site-crimson .glass-card, .theme-site-maroon .glass-card, .theme-site-steel .glass-card {
+    background: rgba(45, 55, 72, 0.7); border-color: rgba(255, 255, 255, 0.1); color: #e2e8f0;
+}
+.theme-site-dark .text-gray-800, .theme-site-forest .text-gray-800, .theme-site-graphite .text-gray-800, .theme-site-coffee .text-gray-800,
+.theme-site-midnight .text-gray-800, .theme-site-indigo .text-gray-800, .theme-site-charcoal .text-gray-800,
+.theme-site-deepsea .text-gray-800, .theme-site-wine .text-gray-800, .theme-site-pinegreen .text-gray-800,
+.theme-site-ruby .text-gray-800, .theme-site-crimson .text-gray-800, .theme-site-maroon .text-gray-800, .theme-site-steel .text-gray-800 { color: #e2e8f0 !important; }
 
-/* --- Site Theme: Serene Blue --- */
+.theme-site-dark .text-gray-600, .theme-site-forest .text-gray-600, .theme-site-graphite .text-gray-600, .theme-site-coffee .text-gray-600,
+.theme-site-midnight .text-gray-600, .theme-site-indigo .text-gray-600, .theme-site-charcoal .text-gray-600,
+.theme-site-deepsea .text-gray-600, .theme-site-wine .text-gray-600, .theme-site-pinegreen .text-gray-600,
+.theme-site-ruby .text-gray-600, .theme-site-crimson .text-gray-600, .theme-site-maroon .text-gray-600, .theme-site-steel .text-gray-600 { color: #a0aec0 !important; }
+
+.theme-site-dark .input-field, .theme-site-forest .input-field, .theme-site-graphite .input-field, .theme-site-coffee .input-field,
+.theme-site-midnight .input-field, .theme-site-indigo .input-field, .theme-site-charcoal .input-field,
+.theme-site-deepsea .input-field, .theme-site-wine .input-field, .theme-site-pinegreen .input-field, .theme-site-ruby .input-field,
+.theme-site-crimson .input-field, .theme-site-maroon .input-field, .theme-site-steel .input-field {
+    background: rgba(26, 32, 44, 0.8); color: white; border-color: #4a5568;
+}
+
+/* --- Individual Site Themes --- */
+body.theme-site-dark { background: #1a202c; }
 body.theme-site-blue { background: linear-gradient(to top, #e0f2f1, #b2dfdb); color: #004d40; }
-.theme-site-blue .glass-card { background: rgba(255, 255, 255, 0.7); border-color: #4db6ac; }
-.theme-site-blue .text-violet-600, .theme-site-blue .text-blue-600 { color: #00796b !important; }
-.theme-site-blue header { background-color: rgba(178, 223, 219, 0.8); }
-
-/* --- Site Theme: Lush Green --- */
 body.theme-site-green { background: linear-gradient(to right, #f1f8e9, #dcedc8); color: #33691e; }
-.theme-site-green .glass-card { background: rgba(232, 245, 233, 0.8); border-color: #a5d6a7; }
-.theme-site-green .text-violet-600, .theme-site-green .text-blue-600 { color: #558b2f !important; }
-.theme-site-green header { background-color: rgba(200, 230, 201, 0.8); }
-
-/* --- Site Theme: Royal Gold --- */
 body.theme-site-gold { background: linear-gradient(to bottom, #fff8e1, #ffecb3); color: #4e342e; }
-.theme-site-gold .glass-card { background: rgba(255, 248, 225, 0.85); border: 1px solid #ffe082; }
-.theme-site-gold .text-violet-600, .theme-site-gold .text-blue-600 { color: #ff8f00 !important; }
-.theme-site-gold header { background-color: rgba(255, 236, 179, 0.8); }
-
-/* --- New Site Themes --- */
 body.theme-site-ocean { background: linear-gradient(to top, #021B79, #0575E6); color: #f0f8ff; }
-.theme-site-ocean .glass-card { background: rgba(1, 23, 80, 0.6); border-color: #0575E6; color: #f0f8ff;}
-.theme-site-ocean .text-gray-800, .theme-site-ocean .text-gray-700 { color: #f0f8ff !important; }
-.theme-site-ocean .text-gray-600, .theme-site-ocean .text-gray-500 { color: #b0c4de !important; }
-.theme-site-ocean .text-violet-600, .theme-site-ocean .text-blue-600 { color: #87cefa !important; }
-.theme-site-ocean.dark-theme-placeholder ::placeholder { color: #b0c4de !important; opacity: 1; }
-
 body.theme-site-sunset { background: linear-gradient(to right, #ff7e5f, #feb47b); color: #431c11; }
-.theme-site-sunset .glass-card { background: rgba(255, 228, 196, 0.7); border-color: #ff7e5f; }
-.theme-site-sunset .text-violet-600, .theme-site-sunset .text-blue-600 { color: #c85a44 !important; }
-
-body.theme-site-forest { background: linear-gradient(to bottom, #2C5364, #203A43, #0F2027); color: #e0e0e0; }
-.theme-site-forest .glass-card { background: rgba(0, 0, 0, 0.4); border-color: #2C5364; color: #e0e0e0; }
-.theme-site-forest .text-gray-800, .theme-site-forest .text-gray-700 { color: #e0e0e0 !important; }
-.theme-site-forest .text-gray-600, .theme-site-forest .text-gray-500 { color: #b0bec5 !important; }
-.theme-site-forest .text-violet-600, .theme-site-forest .text-blue-600 { color: #80cbc4 !important; }
-.theme-site-forest.dark-theme-placeholder ::placeholder { color: #b0bec5 !important; opacity: 1; }
-
+body.theme-site-forest { background: linear-gradient(to bottom, #2C5364, #203A43, #0F2027); }
 body.theme-site-royal-purple { background: linear-gradient(to top right, #4a00e0, #8e2de2); color: #f3e5f5; }
-.theme-site-royal-purple .glass-card { background: rgba(103, 58, 183, 0.5); border-color: #8e2de2; color: #f3e5f5; }
-.theme-site-royal-purple .text-gray-800, .theme-site-royal-purple .text-gray-700 { color: #f3e5f5 !important; }
-.theme-site-royal-purple .text-gray-600, .theme-site-royal-purple .text-gray-500 { color: #ce93d8 !important; }
-.theme-site-royal-purple .text-violet-600, .theme-site-royal-purple .text-blue-600 { color: #d1c4e9 !important; }
-.theme-site-royal-purple.dark-theme-placeholder ::placeholder { color: #ce93d8 !important; opacity: 1; }
-
-body.theme-site-graphite { background: linear-gradient(to bottom, #616161, #424242); color: #f5f5f5; }
-.theme-site-graphite .glass-card { background: rgba(0, 0, 0, 0.3); border-color: #616161; color: #f5f5f5; }
-.theme-site-graphite .text-gray-800, .theme-site-graphite .text-gray-700 { color: #f5f5f5 !important; }
-.theme-site-graphite .text-gray-600, .theme-site-graphite .text-gray-500 { color: #bdbdbd !important; }
-.theme-site-graphite .text-violet-600, .theme-site-graphite .text-blue-600 { color: #eeeeee !important; }
-.theme-site-graphite.dark-theme-placeholder ::placeholder { color: #bdbdbd !important; opacity: 1; }
-
+body.theme-site-graphite { background: linear-gradient(to bottom, #616161, #424242); }
 body.theme-site-mint { background: linear-gradient(to right, #99f2c8, #1f4037); color: #0d1a15; }
-.theme-site-mint .glass-card { background: rgba(230, 255, 240, 0.7); border-color: #99f2c8; }
-.theme-site-mint .text-violet-600, .theme-site-mint .text-blue-600 { color: #1f4037 !important; }
-
 body.theme-site-cherry { background: linear-gradient(to bottom, #f8cdda, #ffffff); color: #8c0032; }
-.theme-site-cherry .glass-card { background: rgba(255, 240, 245, 0.8); border-color: #f8cdda; }
-.theme-site-cherry .text-violet-600, .theme-site-cherry .text-blue-600 { color: #c2185b !important; }
-
-body.theme-site-coffee { background: linear-gradient(to right, #6f4e37, #4b3832); color: #f5deb3; }
-.theme-site-coffee .glass-card { background: rgba(0, 0, 0, 0.4); border-color: #6f4e37; color: #f5deb3; }
-.theme-site-coffee .text-gray-800, .theme-site-coffee .text-gray-700 { color: #f5deb3 !important; }
-.theme-site-coffee .text-gray-600, .theme-site-coffee .text-gray-500 { color: #d2b48c !important; }
-.theme-site-coffee .text-violet-600, .theme-site-coffee .text-blue-600 { color: #f5f5dc !important; }
-.theme-site-coffee.dark-theme-placeholder ::placeholder { color: #d2b48c !important; opacity: 1; }
-
+body.theme-site-coffee { background: linear-gradient(to right, #6f4e37, #4b3832); }
 body.theme-site-sky { background: linear-gradient(to bottom, #87ceeb, #f0f8ff); color: #003366; }
-.theme-site-sky .glass-card { background: rgba(240, 255, 255, 0.8); border-color: #87ceeb; }
-.theme-site-sky .text-violet-600, .theme-site-sky .text-blue-600 { color: #0077be !important; }
-
-body.theme-site-ruby { background: linear-gradient(to right, #b21f1f, #f12711); color: #fff; }
-.theme-site-ruby .glass-card { background: rgba(0, 0, 0, 0.3); border-color: #f12711; color: #fff; }
-.theme-site-ruby .text-gray-800, .theme-site-ruby .text-gray-700 { color: #fff !important; }
-.theme-site-ruby .text-gray-600, .theme-site-ruby .text-gray-500 { color: #ffcdd2 !important; }
-.theme-site-ruby .text-violet-600, .theme-site-ruby .text-blue-600 { color: #ff8a80 !important; }
-.theme-site-ruby.dark-theme-placeholder ::placeholder { color: #ffcdd2 !important; opacity: 1; }
-
+body.theme-site-ruby { background: linear-gradient(to right, #b21f1f, #f12711); }
+body.theme-site-lavender { background: #E6E6FA; color: #483D8B; }
+body.theme-site-peach { background: #FFDAB9; color: #8B4513; }
+body.theme-site-concrete { background: #bdc3c7; color: #2c3e50; }
+body.theme-site-aquamarine { background: #7FFFD4; color: #006A4E; }
+body.theme-site-crimson { background: linear-gradient(to right, #DC143C, #8B0000); }
+body.theme-site-emerald { background: linear-gradient(to right, #50C878, #00A86B); color: #fff; }
+body.theme-site-sunny { background: #FFD700; color: #8B4513; }
+body.theme-site-midnight { background: #191970; }
+body.theme-site-rosegold { background: #B76E79; color: #fff; }
+body.theme-site-teal { background: #008080; color: #fff; }
+body.theme-site-violet { background: #EE82EE; color: #4B0082; }
+body.theme-site-tangerine { background: #F28500; color: #fff; }
+body.theme-site-indigo { background: #4B0082; }
+body.theme-site-coral { background: #FF7F50; color: #fff; }
+body.theme-site-olive { background: #808000; color: #fff; }
+body.theme-site-maroon { background: #800000; }
+body.theme-site-periwinkle { background: #CCCCFF; color: #483D8B; }
+body.theme-site-steel { background: #708090; }
+body.theme-site-turquoise { background: #40E0D0; color: #000; }
+body.theme-site-beige { background: #F5F5DC; color: #556B2F; }
+body.theme-site-hotpink { background: #FF69B4; color: #fff; }
+body.theme-site-charcoal { background: #36454F; }
+body.theme-site-limegreen { background: #32CD32; color: #fff; }
+body.theme-site-plum { background: #DDA0DD; color: #4B0082; }
+body.theme-site-mustard { background: #FFDB58; color: #8B4513; }
+body.theme-site-deepsea { background: #013220; }
+body.theme-site-bubblegum { background: #FFC1CC; color: #8B008B; }
+body.theme-site-sandstone { background: #F4A460; color: #8B4513; }
+body.theme-site-wine { background: #722F37; }
+body.theme-site-slateblue { background: #6A5ACD; color: #fff; }
+body.theme-site-electricblue { background: #7DF9FF; color: #000; }
+body.theme-site-pinegreen { background: #01796F; }
+body.theme-site-magenta { background: #FF00FF; color: #fff; }
+body.theme-site-ivory { background: #FFFFF0; color: #556B2F; }
+body.theme-site-bronze { background: #CD7F32; color: #fff; }
 
 /* ======================================================================== */
 /* =========================== PROFILE THEMES ============================= */
 /* ======================================================================== */
+
 .theme-profile-default {}
 .theme-profile-vintage { background-color: #f5e8c7 !important; border: 1px solid #c8bda4 !important; color: #6d4c41 !important; }
-.theme-profile-vintage h2, .theme-profile-vintage h3, .theme-profile-vintage h4 { font-family: serif; color: #6d4c41 !important; }
-.theme-profile-vintage .text-gray-600 { color: #8d6e63 !important; }
 .theme-profile-neon { background-color: #1a202c !important; border: 1px solid #4a5568 !important; box-shadow: 0 0 15px rgba(0, 255, 255, 0.5) !important; color: #e2e8f0 !important; }
-.theme-profile-neon h3, .theme-profile-neon h4 { color: #00bcd4 !important; text-shadow: 0 0 5px #00bcd4; }
-.theme-profile-neon .text-gray-600 { color: #a0aec0 !important; }
 .theme-profile-sakura { background-color: #fff0f5 !important; border: 1px solid #ffb6c1 !important; color: #c71585 !important; }
-.theme-profile-sakura h3, .theme-profile-sakura h4 { color: #db7093 !important; }
 .theme-profile-grid { background-color: #0d1117 !important; background-image: linear-gradient(rgba(50, 150, 255, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(50, 150, 255, 0.2) 1px, transparent 1px); background-size: 20px 20px; border: 1px solid #30363d !important; color: #c9d1d9 !important; }
-.theme-profile-grid h3, .theme-profile-grid h4 { color: #58a6ff !important; }
 .theme-profile-console { background-color: #000 !important; border: 1px solid #0f0 !important; color: #0f0 !important; font-family: 'Courier New', Courier, monospace; }
-.theme-profile-console h3, .theme-profile-console h4 { text-shadow: 0 0 5px #0f0; }
 .theme-profile-blueprint { background-color: #004080 !important; background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 20px 20px; border: 1px solid #fff !important; color: #fff !important; }
 .theme-profile-golden { background: linear-gradient(145deg, #e6b800, #ffeb99) !important; border: 2px solid #ffd700 !important; color: #3b2f00 !important; }
-.theme-profile-golden h3, .theme-profile-golden h4 { color: #8c6b00 !important; }
 .theme-profile-holographic { background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff) !important; background-size: 400% 400%; animation: holographic 10s ease infinite; border: 1px solid #fff !important; color: #fff !important; text-shadow: 1px 1px 2px #000; }
 @keyframes holographic { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 .theme-profile-wood { background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); background-color: #855e42; border: 2px solid #5d4037 !important; color: #fffde7 !important; text-shadow: 1px 1px 2px #000; }
-.theme-profile-marble { background-image: url('https://www.transparenttextures.com/patterns/black-marble.png'); background-color: #e0e0e0; border: 2px solid #bdbdbd !important; color: #212121 !important; }
-.theme-profile-comic { background-color: #fdfc83 !important; border: 3px solid #000 !important; font-family: 'Comic Sans MS', cursive, sans-serif; color: #000 !important; }
-.theme-profile-comic h3, .theme-profile-comic h4 { text-transform: uppercase; }
-.theme-profile-frost { background: linear-gradient(to bottom, #e6f7ff, #ffffff) !important; border: 1px solid #91d5ff !important; color: #0050b3 !important; }
-.theme-profile-pastel { background-color: #fdf2e9 !important; border: 1px solid #f3d1b7 !important; color: #e67e22 !important; }
-.theme-profile-carbon { background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-color: #333; border: 1px solid #555 !important; color: #eee !important; text-shadow: 1px 1px 1px #000; }
+.theme-profile-carbon-new { background-color: #222 !important; color: #fff !important; border-color: #555 !important; }
+.theme-profile-hacker { background-color: #000 !important; color: #0F0 !important; border-color: #0F0 !important; font-family: monospace; }
+.theme-profile-gold-plate { background-color: #FFD700 !important; color: #4a2c00 !important; border-color: #b8860b !important; }
+.theme-profile-rose-petals { background-color: #ffc0cb !important; color: #8B0000 !important; border-color: #ff69b4 !important; }
+.theme-profile-ocean-waves { background: linear-gradient(to top, #00bfff, #87cefa) !important; color: #fff !important; border-color: #00bfff !important; }
+.theme-profile-galaxy { background: #2c3e50 url('https://www.transparenttextures.com/patterns/stardust.png') !important; color: #fff !important; border-color: #7f8c8d !important; }
+.theme-profile-autumn { background-color: #d2691e !important; color: #fff !important; border-color: #a0522d !important; }
+.theme-profile-winter { background-color: #f0ffff !important; color: #000 !important; border-color: #add8e6 !important; }
+.theme-profile-spring { background-color: #ffb6c1 !important; color: #fff !important; border-color: #ff69b4 !important; }
+.theme-profile-summer { background: linear-gradient(to bottom, #ffff00, #ffd700) !important; color: #000 !important; border-color: #ffc107 !important; }
+.theme-profile-rainbow { background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet) !important; color: #fff !important; border-color: #fff !important; text-shadow: 1px 1px 2px #000; }
+.theme-profile-zebra { background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px) !important; color: #000 !important; border-color: #000 !important; }
+.theme-profile-leopard { background: #e8b36d url('https://www.transparenttextures.com/patterns/clean-textile.png') !important; color: #000 !important; border-color: #d2a661 !important; }
+.theme-profile-tiger { background: linear-gradient(45deg, #ff9900 25%, #000 25%, #000 50%, #ff9900 50%, #ff9900 75%, #000 75%, #000 100%) !important; background-size: 56.57px 56.57px; color: #fff !important; border-color: #ff9900 !important; }
+.theme-profile-polka { background: #fff radial-gradient(#000 15%, transparent 16%) !important; background-size: 40px 40px; color: #000 !important; border-color: #000 !important; }
+.theme-profile-checkered { background: repeating-conic-gradient(#fff 0% 25%, #000 0% 50%) 50% / 40px 40px !important; color: #000 !important; border-color: #000 !important; }
+.theme-profile-hearts { background: #ffc0cb radial-gradient(circle at 50% 50%, #ff1493 20%, transparent 21%) !important; background-size: 50px 50px; color: #fff !important; border-color: #ff1493 !important; }
+.theme-profile-starry { background: #000080 url('https://www.transparenttextures.com/patterns/stardust.png') !important; color: #fff !important; border-color: #ffd700 !important; }
+.theme-profile-clouds { background: #87ceeb url('https://www.transparenttextures.com/patterns/soft-wallpaper.png') !important; color: #fff !important; border-color: #fff !important; }
+.theme-profile-beach { background: #f4a460 url('https://www.transparenttextures.com/patterns/sand.png') !important; color: #000 !important; border-color: #d2a661 !important; }
+.theme-profile-grass { background: #7cfc00 url('https://www.transparenttextures.com/patterns/light-grass.png') !important; color: #006400 !important; border-color: #228b22 !important; }
+.theme-profile-brick { background: #b22222 url('https://www.transparenttextures.com/patterns/brick-wall.png') !important; color: #fff !important; border-color: #8b0000 !important; }
+.theme-profile-denim { background: #1560bd url('https://www.transparenttextures.com/patterns/denim.png') !important; color: #fff !important; border-color: #ffd700 !important; }
+.theme-profile-velvet { background: #8a2be2 url('https://www.transparenttextures.com/patterns/inspiration-geometry.png') !important; color: #fff !important; border-color: #9932cc !important; }
+.theme-profile-silk { background: #ffc0cb url('https://www.transparenttextures.com/patterns/wavecut.png') !important; color: #c71585 !important; border-color: #ff69b4 !important; }
+.theme-profile-lace { background: #fffafa url('https://www.transparenttextures.com/patterns/lace-1.png') !important; color: #000 !important; border-color: #d3d3d3 !important; }
+.theme-profile-leather { background: #000 url('https://www.transparenttextures.com/patterns/leather.png') !important; color: #fff !important; border-color: #8b4513 !important; }
+.theme-profile-metal { background: linear-gradient(to bottom, #c0c0c0, #a9a9a9) !important; color: #000 !important; border-color: #808080 !important; }
+.theme-profile-bronze { background: linear-gradient(to bottom, #cd7f32, #8b4513) !important; color: #fff !important; border-color: #a0522d !important; }
+.theme-profile-copper { background: linear-gradient(to bottom, #b87333, #8b4513) !important; color: #fff !important; border-color: #a0522d !important; }
+.theme-profile-diamond { background: #b9f2ff url('https://www.transparenttextures.com/patterns/diamond-upholstery.png') !important; color: #000 !important; border-color: #add8e6 !important; }
+.theme-profile-emerald { background: #50c878 !important; color: #fff !important; border-color: #009e60 !important; }
+.theme-profile-ruby { background: #e0115f !important; color: #fff !important; border-color: #b22222 !important; }
+.theme-profile-sapphire { background: #0f52ba !important; color: #fff !important; border-color: #00008b !important; }
+.theme-profile-amethyst { background: #9966cc !important; color: #fff !important; border-color: #8a2be2 !important; }
+.theme-profile-topaz { background: #ffc87c !important; color: #000 !important; border-color: #ffa500 !important; }
+.theme-profile-opal { background: #f8f8ff url('https://www.transparenttextures.com/patterns/irongrip.png') !important; color: #000 !important; border-color: #dcdcdc !important; }
+.theme-profile-obsidian { background: #000 url('https://www.transparenttextures.com/patterns/black-felt.png') !important; color: #fff !important; border-color: #483d8b !important; }
+.theme-profile-pearl { background: #eae0c8 url('https://www.transparenttextures.com/patterns/old-wall.png') !important; color: #000 !important; border-color: #d2b48c !important; }
+
+
+
+/* ======================================================================== */
+/* =================== FINAL 10 PREMIUM THEMES ======================= */
+/* ======================================================================== */
+
+/* --- Base styles for ALL themes to have LIGHT glass cards --- */
+.theme-site-cosmic-voyage .glass-card, .theme-site-water-breathing .glass-card, 
+.theme-site-nezuko .glass-card, .theme-site-eid .glass-card, .theme-site-puja .glass-card, 
+.theme-site-thunder .glass-card, .theme-site-rainy-day .glass-card, 
+.theme-site-butterfly .glass-card, .theme-site-liquid .glass-card, .theme-site-boishakh .glass-card {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+    border: none !important;
+}
+/* Ensure text is readable on light cards over dark backgrounds */
+.theme-site-cosmic-voyage .glass-card, .theme-site-water-breathing .glass-card, .theme-site-nezuko .glass-card, 
+.theme-site-eid .glass-card, .theme-site-puja .glass-card, .theme-site-thunder .glass-card, .theme-site-rainy-day .glass-card,
+.theme-site-butterfly .glass-card .text-gray-700, .theme-site-liquid .glass-card .text-gray-700, .theme-site-boishakh .glass-card .text-gray-700 {
+    color: #333 !important;
+}
+.theme-site-cosmic-voyage .glass-card .text-gray-800, .theme-site-cosmic-voyage .glass-card .text-gray-700,
+.theme-site-water-breathing .glass-card .text-gray-800, .theme-site-water-breathing .glass-card .text-gray-700,
+.theme-site-nezuko .glass-card .text-gray-800, .theme-site-nezuko .glass-card .text-gray-700,
+.theme-site-eid .glass-card .text-gray-800, .theme-site-eid .glass-card .text-gray-700,
+.theme-site-puja .glass-card .text-gray-800, .theme-site-puja .glass-card .text-gray-700,
+.theme-site-thunder .glass-card .text-gray-800, .theme-site-thunder .glass-card .text-gray-700,
+.theme-site-rainy-day .glass-card .text-gray-800, .theme-site-rainy-day .glass-card .text-gray-700 { color: #333 !important; }
+
+/* 1. Cosmic Voyage */
+@keyframes cosmic-bg-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+body.theme-site-cosmic-voyage { background: linear-gradient(60deg, #1d2b64, #f8cdda, #1d2b64); background-size: 400% 400%; animation: cosmic-bg-pan 20s ease infinite; }
+.theme-site-cosmic-voyage button:hover, .theme-site-cosmic-voyage .nav-link:hover { background: linear-gradient(60deg, #f8cdda, #1d2b64, #f8cdda); background-size: 200% 200%; animation: cosmic-bg-pan 5s ease infinite; color: #fff !important; }
+
+/* 2. Liquid Crystal */
+@keyframes liquid-bg-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+body.theme-site-liquid { color: #333; animation: liquid-bg-shift 20s ease infinite; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; }
+.theme-site-liquid button:hover, .theme-site-liquid .nav-link:hover { background: linear-gradient(-45deg, #23d5ab, #23a6d5, #e73c7e, #ee7752); background-size: 200% 200%; animation: liquid-bg-shift 5s ease infinite; color: #fff !important; }
+
+/* 3. Demon Slayer: Water Breathing */
+body.theme-site-water-breathing { background: #0a192f url('https://i.redd.it/iwn35i8orv3b1.gif') center center/cover no-repeat fixed; }
+.theme-site-water-breathing button, .theme-site-water-breathing .nav-link { position: relative; overflow: hidden; z-index: 1; }
+.theme-site-water-breathing button:hover::before, .theme-site-water-breathing .nav-link:hover::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: url('https://i.pinimg.com/originals/22/8e/41/228e4197a044409439c6802b11aac16c.gif') center center/cover; 
+    border-radius: inherit; opacity: 0.8; z-index: -1;
+}
+
+/* 4. Demon Slayer: Nezuko Kamado */
+body.theme-site-nezuko { background: #1a000a url('https://www.gifcen.com/wp-content/uploads/2021/12/nezuko-kamado-gif.gif') center center/cover no-repeat fixed; }
+.petal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+.rose-petal { position: absolute; top: -20px; width: 15px; height: 15px; background-color: #ffb6c1; border-radius: 0 50% 0 50%; animation: fall-petal linear infinite; }
+@keyframes fall-petal { to { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
+
+/* 5. Pohela Boishakh */
+body.theme-site-boishakh { background: #fff url('https://i.pinimg.com/originals/c9/c7/2a/c9c72aae92d0d62159d9447786fa6e0e.gif') center center/cover no-repeat fixed; }
+.theme-site-boishakh button:hover { background: linear-gradient(45deg, #ff0000, #ffffff); box-shadow: 0 0 10px #ff0000; color: #000 !important; }
+
+/* 6. Eid Mubarak */
+body.theme-site-eid { background: #040c18 url('https://cdn.dribbble.com/userupload/30442484/file/original-e5dd6c72474ce38fa047a6f8499fb8d7.gif') center center/cover no-repeat fixed; }
+.eid-animation-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+.walking-goat { 
+    position: absolute; width: 100px; height: 100px;
+    background-image: url('https://i.pinimg.com/originals/60/b3/1e/60b31e0d188ea1db4cde99e4139e3d38.gif'); 
+    background-size: contain; background-repeat: no-repeat;
+    transition: top 8s ease-in-out, left 8s ease-in-out; 
+}
+.theme-site-eid button:hover { background: #DAA520; color: #040c18 !important; box-shadow: 0 0 15px #DAA520; }
+
+/* 7. Durga Puja */
+body.theme-site-puja { background: #fde68a url('https://i.pinimg.com/originals/aa/8a/e2/aa8ae2edb2f7900e8ad4eb4694883dce.gif') center center/cover no-repeat fixed; }
+.durga-animation-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+.durga-face { position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; background: url('https://mir-s3-cdn-cf.behance.net/project_modules/disp/26c5f1138463827.57627ab64783e.gif') center/contain no-repeat; transform: translate(-50%, -50%); animation: fade-in-out 6s ease-in-out; }
+@keyframes fade-in-out { 0%, 100% { opacity: 0; } 20%, 80% { opacity: 0.5; } }
+.theme-site-puja button { position: relative; overflow: hidden; }
+.theme-site-puja button:active::after { content: ''; position: absolute; top: 50%; left: -50px; width: 40px; height: 40px; background: url('https://i.imgur.com/your-trishul-image.png') center/contain no-repeat; animation: trishul-throw 0.5s forwards; z-index: 10; }
+@keyframes trishul-throw { to { left: 50%; transform: translate(-50%, -50%) rotate(360deg); opacity: 0; } }
+
+/* 8. Butterfly Effect */
+body.theme-site-butterfly { background: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%); }
+.butterfly-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+.butterfly { 
+    position: absolute; width: 80px; height: 80px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/6/6c/Butterfly_o_Mariposa.gif') center/contain no-repeat;
+    transition: top 8s ease-in-out, left 8s ease-in-out; 
+}
+
+/* 9. Rainy Day */
+body.theme-site-rainy-day { background: linear-gradient(to top, #304352, #d7d2cc); }
+.rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+.rain-drop { position: absolute; bottom: 100%; width: 1px; height: 50px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.5)); animation: fall-rain linear infinite; }
+@keyframes fall-rain { to { transform: translateY(200vh); } }
+
+/* 10. Thunder Strike */
+body.theme-site-thunder { background: #000; }
+.thunder-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+.thunder-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0.8; animation: flash 1s; }
+@keyframes flash { 0%, 100% { opacity: 0; } 10%, 30% { opacity: 0.6; } 20% { opacity: 0.2; } }
+.thunder-strike { position: absolute; width: 4px; height: 100vh; background: linear-gradient(to bottom, rgba(255,255,0,0), #ffff00); animation: strike 0.6s; }
+@keyframes strike { 0% { height: 0; opacity: 1; } 100% { height: 100vh; opacity: 0; } }
+.theme-site-thunder button:active { animation: thunder-flash-btn 0.3s; }
+@keyframes thunder-flash-btn { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 25px #fff, 0 0 15px #00f, 0 0 30px #fff; } }
+
+/* --- Overriding rule for Special User Name --- */
+/* This rule is placed at the end to ensure it overrides all other theme styles. */
+a.user-name-link.special-user-name, .special-user-name {
+    color: #c53030 !important; /* Dark Red */
+    font-weight: bold !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4) !important;
+}

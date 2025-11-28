@@ -17,6 +17,8 @@ import { handleStatisticsClicks } from './handlers/statisticsHandlers.js';
 import { handleQuizClicks, handleQuizSubmits } from './handlers/quizHandlers.js';
 import { handleThemeClicks, handleThemeSubmits } from './handlers/themeHandlers.js';
 import { handleHomeClicks } from './handlers/homeHandlers.js';
+import { handleCricketClicks, handleCricketSubmits } from './handlers/cricketHandlers.js';
+import { handleUsernameShopClicks, handleUsernameShopInputs } from './handlers/usernameShopHandlers.js';
 import { showView, clearUserProfileTimers, showReportModal } from './ui.js';
 import { clearFriendTimers } from './ui/friendsUI.js';
 import { apiRequest, API_URL } from './api.js';
@@ -29,8 +31,10 @@ export function initHandlers(user, routerFunc) {
     routeApp = routerFunc;
     document.body.removeEventListener('click', globalClickHandler);
     document.body.removeEventListener('submit', globalSubmitHandler);
+    document.body.removeEventListener('input', globalInputHandler);
     document.body.addEventListener('click', globalClickHandler);
     document.body.addEventListener('submit', globalSubmitHandler);
+    document.body.addEventListener('input', globalInputHandler);
 }
 
 function navigate(view, id = null) {
@@ -60,7 +64,7 @@ async function globalClickHandler(e) {
         return;
     }
 
-    const isNavLink = target.closest('a, .nav-link, .user-name-link, .stats-link, .open-conversation, .notification-item, .view-topic-btn, .view-archive-btn, .staff-tool-card, .admin-tool-card, .admin-tool-card-nav, #show-admin-tools-btn, #view-gifts-btn, .lottery-game-card, #go-to-site-themes, #go-to-profile-themes, #go-to-redeem-code, #go-to-bbcode-list');
+    const isNavLink = target.closest('a, .nav-link, .user-name-link, .stats-link, .open-conversation, .notification-item, .view-topic-btn, .view-archive-btn, .staff-tool-card, .admin-tool-card, .admin-tool-card-nav, #show-admin-tools-btn, #view-gifts-btn, .lottery-game-card, #go-to-site-themes, #go-to-profile-themes, #go-to-premium-themes, #go-to-redeem-code, #go-to-bbcode-list, #cricket-btn');
     if (isNavLink && !target.closest('.friend-action-pm')) {
         e.preventDefault();
     }
@@ -115,6 +119,7 @@ async function globalClickHandler(e) {
     if (target.id === 'themes-btn' || target.closest('.back-to-themes')) { navigate('theme_shop'); return; }
     if (target.closest('#go-to-site-themes')) { navigate('site_themes'); return; }
     if (target.closest('#go-to-profile-themes')) { navigate('profile_themes'); return; }
+    if (target.closest('#go-to-premium-themes')) { navigate('premium_themes'); return; }
     if (target.closest('#go-to-redeem-code')) { navigate('redeem_code'); return; }
     if (target.closest('.staff-tool-card')) { navigate(target.closest('.staff-tool-card').dataset.view); return; }
     if (target.id === 'staff-panel-btn-home' || target.classList.contains('back-to-staff-panel')) { navigate('staff_panel'); return; }
@@ -122,22 +127,11 @@ async function globalClickHandler(e) {
     if (target.id === 'back-to-user-profile-from-admin-tools') { navigate('user_profile', target.dataset.userId); return; }
     if (target.id === 'back-to-admin-tools') { navigate('admin_tools', target.dataset.userId); return; }
     if (target.closest('.admin-tool-card-nav')) { navigate(target.closest('.admin-tool-card-nav').dataset.view, target.closest('.admin-tool-card-nav').dataset.userId); return; }
+    if (target.closest('#cricket-btn')) { navigate('cricket'); return; }
+    if (target.closest('#live-matches-btn')) { navigate('cricket_live_matches'); return; }
+    if (target.id === 'go-to-username-shop') { navigate('username_shop'); return; }
+    if (target.id === 'back-to-profile-from-shop') { navigate('user_profile', currentUser.id); return; }
 
-    const giftTradeBtn = target.closest('.gift-trade-btn');
-    if (giftTradeBtn) {
-        const tradeId = giftTradeBtn.dataset.tradeId;
-        const decision = giftTradeBtn.dataset.action;
-        const formData = new FormData();
-        formData.append('action', 'respond_to_gift_trade');
-        formData.append('trade_id', tradeId);
-        formData.append('decision', decision);
-        const result = await apiRequest(API_URL, { method: 'POST', body: formData });
-        alert(result.message);
-        if (result.status === 'success') {
-            giftTradeBtn.closest('.gift-trade-actions').innerHTML = `<p class="text-sm font-bold text-green-600">Action Taken: ${decision}</p>`;
-        }
-        return true;
-    }
 
     if (await handleHomeClicks(target, currentUser)) return;
     if (await handleShoutClicks(target, currentUser)) return;
@@ -156,7 +150,9 @@ async function globalClickHandler(e) {
     if (await handleReportClicks(target, currentUser)) return;
     if (await handleStatisticsClicks(target)) return;
     if (await handleQuizClicks(target, currentUser)) return;
+    if (await handleCricketClicks(target, currentUser)) return;
     if (await handleThemeClicks(target)) return;
+    if (await handleUsernameShopClicks(target)) return;
 
     const reportBtn = target.closest('.report-btn');
     if (reportBtn) { showReportModal(reportBtn.dataset.type, reportBtn.dataset.id, reportBtn.dataset.preview); return; }
@@ -169,7 +165,6 @@ async function globalSubmitHandler(e) {
     const form = e.target;
     const formData = new FormData(form);
     
-    // *** ফিক্স: এখন শুধুমাত্র form submit-এর মাধ্যমে রিপোর্ট হ্যান্ডেল করা হচ্ছে ***
     if (await handleReportSubmits(form, formData, currentUser)) return;
     
     if (await handleShoutSubmits(form, formData, currentUser)) return;
@@ -181,19 +176,29 @@ async function globalSubmitHandler(e) {
     if (await handlePremiumToolsSubmits(form, formData, currentUser)) return;
     if (await handleThemeSubmits(form, formData, currentUser)) return;
     if (await handleQuizSubmits(form, formData, currentUser)) return;
+    if (await handleCricketSubmits(form, formData, currentUser)) return;
+}
+
+async function globalInputHandler(e) {
+    const target = e.target;
+    handleUsernameShopInputs(target);
 }
 
 export const dataIntervals = {
     id: null,
     start: (currentUser) => {
         if (dataIntervals.id) clearInterval(dataIntervals.id);
+
         const fetchDataForInterval = async () => {
             if (!currentUser) return;
             const { fetchData_user } = await import('./handlers/userHandlers.js');
-            const { fetchData_quizzes } = await import('./handlers/quizHandlers.js');
-            fetchData_user.updateStatus(); 
+            
+            const statusData = await apiRequest(`${API_URL}?action=check_status`);
+            if (statusData && statusData.status === 'success' && statusData.user) {
+                Object.assign(currentUser, statusData.user);
+            }
+            
             fetchData_user.latestPm();
-            fetchData_quizzes.counts();
             
             const notifData = await apiRequest(`${API_URL}?action=get_unread_notification_count`);
             const badge = document.getElementById('notification-count-badge');
@@ -203,16 +208,17 @@ export const dataIntervals = {
             } else if (badge) {
                 badge.classList.add('hidden');
             }
+            
             const isHomeViewActive = document.getElementById('center-panel')?.querySelector('#latest-shout-container');
             if(isHomeViewActive){
                 const { fetchData_shouts } = await import('./handlers/shoutHandlers.js');
                 fetchData_shouts.latestShout(currentUser);
-                fetchData_user.siteStats();
-                fetchData_quizzes.announcement();
             }
         };
         
-        dataIntervals.id = setInterval(fetchDataForInterval, 15000);
+        // --- কোড আপডেট করা হয়েছে: এখন প্রথমে একবার ডেটা লোড হবে, তারপর প্রতি ৩০ সেকেন্ড পর পর ---
+        fetchDataForInterval();
+        dataIntervals.id = setInterval(fetchDataForInterval, 30000);
     },
     stop: () => {
         if (dataIntervals.id) clearInterval(dataIntervals.id);

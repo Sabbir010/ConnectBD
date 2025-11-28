@@ -6,8 +6,9 @@
     <title>ConnectBD.Com - Your Social Community</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <link rel="stylesheet" href="/css/games/ball_sort.css"> 
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -42,13 +43,19 @@
             text-decoration: underline;
         }
         
-        /* *** নতুন ফিক্স: মেসেজ বক্সের লেখার রঙ ঠিক করা হয়েছে *** */
+        /* মেসেজ বক্সের লেখার রঙ ঠিক করা হয়েছে */
         .glass-card textarea, .glass-card input[type="text"], .glass-card input[type="email"], .glass-card input[type="password"], .glass-card input[type="number"] {
             color: #1f2937; /* গাঢ় ধূসর রঙ */
         }
         .dark-theme-placeholder ::placeholder {
             color: #a0aec0 !important;
             opacity: 1;
+        }
+        .blue-tick-icon {
+            color: #0ea5e9; /* sky-500 color */
+            font-size: 0.8em;
+            vertical-align: middle;
+            margin-left: 4px;
         }
     </style>
 </head>
@@ -110,6 +117,8 @@
                </div>
            </div>
         </header>
+        
+        <div id="global-pm-notification" class="hidden max-w-4xl mx-auto px-4 pt-4"></div>
 
         <main class="max-w-4xl mx-auto py-6 px-4">
             <div id="center-panel" class="w-full space-y-6"></div>

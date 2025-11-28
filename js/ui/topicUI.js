@@ -123,6 +123,9 @@ export async function renderTopicDetails(data, currentUser) {
 
     repliesContainer.innerHTML = '';
     if (replies.length > 0) {
+        const isStaff = currentUser && ['Admin', 'Senior Moderator', 'Moderator'].includes(currentUser.role);
+        const isPremium = currentUser && currentUser.is_premium == 1 && (new Date(currentUser.premium_expires_at) > new Date());
+
         for (const reply of replies) {
             const replyAvatar = reply.photo_url || DEFAULT_AVATAR_URL;
             const replyDisplayRole = reply.display_role || reply.role;
@@ -133,6 +136,12 @@ export async function renderTopicDetails(data, currentUser) {
             let reportReplyBtn = '';
             if (currentUser && !isReplyOwner) {
                 reportReplyBtn = `<button class="report-btn text-xs text-gray-400 hover:text-red-500" data-type="topic_reply" data-id="${reply.id}" data-preview="Reply by ${escapeHTML(reply.display_name)}"><i class="fas fa-flag"></i> Report</button>`;
+            }
+
+            // *** এডিট বাটন ***
+            let editReplyBtn = '';
+            if (isStaff || (isReplyOwner && isPremium)) {
+                editReplyBtn = ` | <button class="edit-reply-btn text-xs text-blue-500 hover:underline font-semibold" data-reply-id="${reply.id}">Edit</button>`;
             }
             
             const replyEl = document.createElement('div');
@@ -145,7 +154,10 @@ export async function renderTopicDetails(data, currentUser) {
                             <p><strong class="user-name-link ${replyRoleClass}" data-user-id="${reply.user_id}">${escapeHTML(reply.display_name)}</strong> <span class="text-sm text-gray-500">(${replyDisplayRole})</span></p>
                             <p class="text-xs text-gray-400 mb-2">Replied on: ${new Date(reply.created_at).toLocaleString()}</p>
                         </div>
-                        ${reportReplyBtn}
+                        <div class="flex space-x-2">
+                            ${reportReplyBtn}
+                            ${editReplyBtn}
+                        </div>
                     </div>
                     <div class="text-sm">${replyContent}</div>
                 </div>`;
@@ -194,7 +206,7 @@ export function renderTopicOptions(topic, currentUser) {
     backBtn.dataset.topicId = topic.id;
     const isOwner = currentUser && currentUser.id == topic.user_id;
     const isStaff = currentUser && ['Admin', 'Senior Moderator', 'Moderator'].includes(currentUser.role);
-    const isPremium = currentUser && currentUser.is_premium == 1;
+    const isPremium = currentUser && currentUser.is_premium == 1 && (new Date(currentUser.premium_expires_at) > new Date());
     
     let optionsHTML = `
         <p><strong>Topic ID:</strong> ${topic.id}</p>
@@ -212,7 +224,7 @@ export function renderTopicOptions(topic, currentUser) {
         `;
     }
 
-    if ((isOwner && isPremium) || isStaff) {
+    if (isStaff || (isOwner && isPremium)) {
         optionsHTML += `
             <div class="mt-4">
                 <h3 class="font-bold text-lg mb-2">Edit Topic</h3>
@@ -228,15 +240,24 @@ export function renderTopicOptions(topic, currentUser) {
                 </form>
             </div>
             <hr class="my-4">
+            
             <div class="mt-4">
                  <button class="w-full p-2 rounded text-white bg-red-600 hover:bg-red-700" id="delete-topic-btn" data-topic-id="${topic.id}">DELETE TOPIC</button>
             </div>
+            
+            <hr class="my-4">
+            <button class="w-full p-2 mt-4 rounded text-white bg-gray-500 hover:bg-gray-600" id="toggle-replies-visibility-btn" data-topic-id="${topic.id}">
+                ${topic.replies_hidden_by !== null ? 'Show Replies' : 'Hide Replies'}
+            </button>
+            <button class="w-full p-2 mt-2 rounded text-white bg-yellow-500 hover:bg-yellow-600" id="toggle-close-topic-btn" data-topic-id="${topic.id}">
+                ${topic.is_closed == 1 ? 'Open Topic' : 'Close Topic'}
+            </button>
         `;
-        const visibilityText = topic.replies_hidden_by !== null ? 'Show Replies' : 'Hide Replies';
-        const closeText = topic.is_closed == 1 ? 'Open Topic' : 'Close Topic';
-        optionsHTML += `<hr class="my-4">
-            <button class="w-full p-2 mt-4 rounded text-white bg-gray-500 hover:bg-gray-600" id="toggle-replies-visibility-btn" data-topic-id="${topic.id}">${visibilityText}</button>
-            <button class="w-full p-2 mt-2 rounded text-white bg-yellow-500 hover:bg-yellow-600" id="toggle-close-topic-btn" data-topic-id="${topic.id}">${closeText}</button>
+    } else if (isOwner && !isPremium) {
+        optionsHTML += `
+            <div class="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+                <p><i class="fas fa-crown"></i> <strong>Premium Required:</strong> You need to be a Premium member to edit your topics.</p>
+            </div>
         `;
     }
 
@@ -298,4 +319,17 @@ export function renderTopicStats(stats) {
             categoriesEl.appendChild(li);
          });
     }
+}
+
+// *** নতুন ফাংশন: রিপ্লাই এডিট ফর্ম তৈরি করার জন্য ***
+export function renderTopicReplyEditForm(reply) {
+    const replyIdInput = document.getElementById('edit-reply-id');
+    const topicIdInput = document.getElementById('edit-reply-topic-id');
+    const contentInput = document.getElementById('edit-reply-content');
+    const backBtn = document.getElementById('back-to-topic-from-edit');
+
+    if (replyIdInput) replyIdInput.value = reply.id;
+    if (topicIdInput) topicIdInput.value = reply.topic_id;
+    if (contentInput) contentInput.value = reply.content;
+    if (backBtn) backBtn.dataset.topicId = reply.topic_id;
 }

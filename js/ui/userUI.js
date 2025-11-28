@@ -1,5 +1,5 @@
 // js/ui/userUI.js
-import { escapeHTML, DEFAULT_AVATAR_URL } from './coreUI.js';
+import { escapeHTML, DEFAULT_AVATAR_URL, generateUserDisplay } from './coreUI.js';
 import { formatSeconds, formatSessionTime, calculateAge, linkify, formatIdleTime } from './helpers.js';
 import { renderShout } from './shoutUI.js';
 import { applyProfileTheme } from './themeUI.js';
@@ -46,6 +46,8 @@ export function renderUserList(users) {
         const displayRole = user.display_role || user.role;
         const roleClass = `role-${displayRole.toLowerCase().replace(' ', '')}`;
 
+        const userDisplay = generateUserDisplay(user, false);
+
         let onlineStatusHTML = '';
         const isOnline = (new Date(user.server_time) - new Date(user.last_seen)) / 1000 < 300;
 
@@ -80,8 +82,8 @@ export function renderUserList(users) {
         card.innerHTML = `
             <img class="h-12 w-12 rounded-full object-cover" src="${escapeHTML(avatar)}" alt="avatar">
             <div class="flex-grow">
-                <strong class="user-name-link cursor-pointer" data-user-id="${user.id}">${escapeHTML(user.display_name)}</strong>
-                <p class="text-sm font-semibold ${roleClass}">${escapeHTML(displayRole)}</p>
+                <div class="font-bold text-sm">${userDisplay}</div>
+                <p class="text-xs font-semibold ${roleClass}">${escapeHTML(displayRole)}</p>
                 ${onlineStatusHTML}
             </div>`;
         userListContainer.appendChild(card);
@@ -103,33 +105,94 @@ export function renderUserProfile(user, currentUser) {
 
     const getStatus = (user) => {
         const displayRole = user.display_role || user.role;
-        if (displayRole !== 'Member') return displayRole;
+        if (['Admin', 'Senior Moderator', 'Moderator', 'Special'].includes(displayRole)) {
+            return displayRole;
+        }
         if (isPremiumActive) return 'Premium User';
-        return 'Member';
+        if (displayRole === 'Member') {
+            return user.level_title || user.member_status || 'Member';
+        }
+        return displayRole;
     };
 
     const status = getStatus(user);
-    const userNameClass = isPremiumActive ? 'premium-username' : `role-${status.toLowerCase().replace(' ', '')}`;
+    const statusBase = status.split(' ')[0].toLowerCase();
+    
+    let userNameClass = `role-${statusBase}`;
+    let userNameStyle = '';
 
-    // --- Status, Idle Time and Where Location ---
+    if (user.is_special == 1) {
+        userNameClass = 'special-user-name';
+    } else if (user.username_color) {
+        userNameStyle = `color: ${escapeHTML(user.username_color)};`;
+    } else if (status === 'Premium User') {
+        userNameClass = 'premium-username';
+    }
+
+    const verifiedBadge = user.is_verified == 1 ? '<i class="fas fa-check-circle text-blue-500 ml-1" title="Verified"></i>' : '';
+    const displayName = user.capitalized_username || user.display_name;
+
+    const level = parseInt(user.level) || 1;
+    const xp = parseFloat(user.xp) || 0;
+    
+    const currentLevelStartXp = (level - 1) * 100;
+    const nextLevelStartXp = level * 100;
+    const xpNeeded = nextLevelStartXp - xp;
+    
+    let progressPercent = 0;
+    if (level < 100) {
+        progressPercent = ((xp - currentLevelStartXp) / (nextLevelStartXp - currentLevelStartXp)) * 100;
+        if (progressPercent < 0) progressPercent = 0;
+        if (progressPercent > 100) progressPercent = 100;
+    } else {
+        progressPercent = 100;
+    }
+
+    const levelProgressHTML = `
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <span class="text-xl font-bold text-blue-800">Level ${level}</span>
+                    <span class="text-sm text-blue-600 ml-2">(${status})</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-sm font-semibold text-gray-700">${xp.toFixed(2)} XP</span>
+                    ${level < 100 ? `<span class="text-xs text-gray-500 block">Next Level in: ${xpNeeded.toFixed(2)} XP</span>` : '<span class="text-xs text-green-600 block">Max Level Reached!</span>'}
+                </div>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+            </div>
+        </div>
+    `;
+
     let onlineStatusHTML = '';
     let locationAndIdleHTML = '';
 
     if (user.is_online) {
-        onlineStatusHTML = `<h3 class="text-2xl font-bold text-gray-800">${escapeHTML(user.display_name)} is <span class="text-green-600">Online!</span></h3>`;
+        onlineStatusHTML = `<h3 class="text-2xl sm:text-3xl font-bold">
+            <span class="${userNameClass}" style="${userNameStyle}">${escapeHTML(displayName)}</span>
+            ${verifiedBadge}
+        </h3>
+        <p class="text-green-600 font-semibold mt-1">Online!</p>`;
+        
         locationAndIdleHTML = `
             <p><strong>Where:</strong> <span class="font-semibold">${escapeHTML(user.current_page || 'Exploring...')}</span></p>
             <p><strong>Idle For:</strong> <span id="live-idle-time">${formatIdleTime(user.idle_seconds)}</span></p>
         `;
     } else {
-        onlineStatusHTML = `<h3 class="text-2xl font-bold text-gray-800">${escapeHTML(user.display_name)} is <span class="text-gray-500">Offline!</span></h3>`;
+        onlineStatusHTML = `<h3 class="text-2xl sm:text-3xl font-bold">
+            <span class="${userNameClass}" style="${userNameStyle}">${escapeHTML(displayName)}</span>
+            ${verifiedBadge}
+        </h3>
+        <p class="text-gray-500 font-semibold mt-1">Offline!</p>`;
+        
         locationAndIdleHTML = `
             <p><strong>Where:</strong></p>
             <p><strong>Idle For:</strong> ${formatIdleTime(user.idle_seconds)}</p>
         `;
     }
     
-    // --- Send PM Box ---
     let sendPmHTML = '';
     if (!isOwnProfile) {
         sendPmHTML = `
@@ -143,7 +206,6 @@ export function renderUserProfile(user, currentUser) {
             </div>`;
     }
 
-    // --- Premium Status Box ---
     let premiumStatusHTML = '';
     if (isPremiumActive) {
         const expiryDate = new Date(user.premium_expires_at).toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -154,7 +216,6 @@ export function renderUserProfile(user, currentUser) {
             </div>`;
     }
 
-    // --- Friend & Report Buttons ---
     let friendButtonHTML = '';
     if (!isOwnProfile) {
         let btn_text = '';
@@ -186,16 +247,27 @@ export function renderUserProfile(user, currentUser) {
         friendButtonHTML += `<button class="report-btn w-full md:w-auto flex-1 mt-2 md:mt-0 md:ml-2 px-4 py-2 font-bold text-white bg-gray-500 hover:bg-gray-600 rounded-md" data-type="user" data-id="${user.id}" data-preview="User Profile of ${escapeHTML(user.display_name)}"><i class="fas fa-flag mr-2"></i> Report User</button>`;
     }
     
-    // --- Pinned Shout ---
     let pinnedShoutHTML = '';
     if(user.pinned_shout) {
         const pinnedShoutContainer = document.createElement('div');
-        const fullShoutObject = { ...user.pinned_shout, user_id: user.id, display_name: user.display_name, photo_url: user.photo_url, role: user.role, display_role: user.display_role };
+        const fullShoutObject = { 
+            ...user.pinned_shout, 
+            user_id: user.id, 
+            display_name: user.display_name, 
+            capitalized_username: user.capitalized_username,
+            username_color: user.username_color,
+            photo_url: user.photo_url, 
+            role: user.role, 
+            display_role: user.display_role,
+            is_premium: user.is_premium,
+            premium_expires_at: user.premium_expires_at,
+            is_verified: user.is_verified,
+            is_special: user.is_special
+        };
         pinnedShoutContainer.appendChild(renderShout(fullShoutObject, currentUser));
         pinnedShoutHTML = `<div class="mt-6"><h4 class="text-xl font-semibold mb-2"><i class="fas fa-thumbtack text-gray-500"></i> Pinned Shout</h4>${pinnedShoutContainer.innerHTML}</div>`;
     }
 
-    // --- Admin Tools Button ---
     let adminToolsButtonHTML = '';
     if ((isStaffViewing && !isOwnProfile) || (currentUser.role === 'Admin' && isOwnProfile)) {
         adminToolsButtonHTML = `<div class="mt-4"><button id="show-admin-tools-btn" data-user-id="${user.id}" class="w-full px-4 py-2 font-bold text-white bg-red-600 rounded-md hover:bg-red-700"><i class="fas fa-user-shield mr-2"></i> Admin Tools</button></div>`;
@@ -212,14 +284,13 @@ export function renderUserProfile(user, currentUser) {
         <div class="bg-white p-6 rounded-b-lg shadow-md">
             <div class="flex justify-between items-start mt-14">
                 <div>
-                    <h3 class="text-2xl sm:text-3xl font-bold"><span class="${userNameClass}">${escapeHTML(user.display_name)}</span></h3>
+                    ${onlineStatusHTML}
                     <p class="text-lg text-gray-600">${escapeHTML(user.full_name || 'Full Name Not Set')}</p>
                     <div class="mt-2">
                         <span class="px-3 py-1 text-sm font-semibold rounded-full ${status === 'Premium User' ? 'bg-yellow-200 text-yellow-800' : (status === 'Admin' ? 'bg-red-200 text-red-800' : 'bg-blue-200 text-blue-800')}">${status === 'Premium User' ? '<i class="fas fa-star"></i> ' + status : status}</span>
                     </div>
                 </div>
                 <div id="user-activity-status" class="text-sm text-gray-700 text-right flex-shrink-0">
-                    ${onlineStatusHTML}
                     <div class="mt-2 text-gray-500">
                         ${locationAndIdleHTML}
                         <p><strong>Online Time:</strong> <span>${formatSessionTime(user.total_online_seconds)}</span></p>
@@ -227,6 +298,8 @@ export function renderUserProfile(user, currentUser) {
                 </div>
             </div>
             
+            ${levelProgressHTML}
+
             ${adminToolsButtonHTML}
             
             ${user.is_banned ? '<p class="text-red-500 font-bold mt-2">-- This user is Banned --</p>' : ''}
@@ -284,7 +357,6 @@ export function renderUserProfile(user, currentUser) {
         }, 1000);
     }
 }
-
 
 export function renderAdvanceProfile(user) {
     const container = document.getElementById('advance-profile-content');
@@ -345,7 +417,20 @@ export function renderUserContent(data, currentUser) {
 
     if (data.type === 'shouts') {
         content.forEach(item => {
-            const fullShoutObject = { ...item, user_id: user.id, display_name: user.display_name, photo_url: user.photo_url, role: user.role, display_role: user.display_role };
+            const fullShoutObject = { 
+                ...item, 
+                user_id: user.id, 
+                display_name: user.display_name, 
+                capitalized_username: user.capitalized_username,
+                username_color: user.username_color,
+                photo_url: user.photo_url, 
+                role: user.role, 
+                display_role: user.display_role,
+                is_premium: user.is_premium,
+                premium_expires_at: user.premium_expires_at,
+                is_verified: user.is_verified,
+                is_special: user.is_special
+            };
             listEl.appendChild(renderShout(fullShoutObject, currentUser));
         });
     } else {
@@ -370,7 +455,6 @@ export function renderUserContent(data, currentUser) {
         });
     }
 }
-
 
 export function renderLatestPmNotification(pm) {
     const container = document.getElementById('latest-pm-notification');

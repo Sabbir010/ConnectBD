@@ -25,28 +25,27 @@ export async function renderShout(shout, currentUser) {
         return `<span class="react-btn cursor-pointer px-1 hover:scale-125 transition-transform" data-reaction="${key}">${emoji}</span>${countHTML}`;
     }).join(' / ');
 
-    let controlsHTML = '';
+    const controls = [];
     const isOwner = currentUser && currentUser.id === shout.user_id;
     const isStaff = currentUser && ['Admin', 'Senior Moderator', 'Moderator'].includes(currentUser.role);
     const isPremium = currentUser && currentUser.is_premium && new Date(currentUser.premium_expires_at) > new Date();
 
+    if ((isOwner && isPremium) || isStaff) {
+        controls.push(`<a href="#" class="edit-shout-btn text-blue-600 hover:underline" data-shout-id="${shout.id}">Edit</a>`);
+    }
     if (isOwner || isStaff) {
-        if((isOwner && isPremium) || isStaff) {
-             controlsHTML += `<a href="#" class="edit-shout-btn text-blue-600 hover:underline" data-shout-id="${shout.id}">Edit</a> || `;
-        }
-        controlsHTML += `<a href="#" class="delete-shout-btn text-red-600 hover:underline" data-shout-id="${shout.id}">Delete</a>`;
-        if((isOwner && isPremium)) {
-            const isPinned = currentUser.pinned_shout_id == shout.id;
-            const pinText = isPinned ? 'Unpin' : 'Pin';
-            controlsHTML += ` || <a href="#" class="pin-shout-btn text-green-600 hover:underline" data-shout-id="${shout.id}">${pinText}</a>`;
-        }
+        controls.push(`<a href="#" class="delete-shout-btn text-red-600 hover:underline" data-shout-id="${shout.id}">Delete</a>`);
     }
-    
-    // *** নতুন ফিক্স: রিপোর্ট বাটন এখানে যোগ করা হয়েছে ***
+    if (isOwner && isPremium) {
+        const isPinned = currentUser.pinned_shout_id == shout.id;
+        const pinText = isPinned ? 'Unpin' : 'Pin';
+        controls.push(`<a href="#" class="pin-shout-btn text-green-600 hover:underline" data-shout-id="${shout.id}">${pinText}</a>`);
+    }
     if (currentUser && !isOwner) {
-        if(controlsHTML) controlsHTML += ' || '; // যদি আগে কোনো বাটন থাকে
-        controlsHTML += `<a href="#" class="report-btn font-semibold text-gray-500 hover:text-red-500" data-type="shout" data-id="${shout.id}" data-preview="Shout by ${escapeHTML(shout.display_name)}">Report</a>`;
+        controls.push(`<a href="#" class="report-btn font-semibold text-gray-500 hover:text-red-500" data-type="shout" data-id="${shout.id}" data-preview="Shout by ${escapeHTML(shout.display_name)}">Report</a>`);
     }
+    const controlsHTML = controls.join(' || ');
+
 
     shoutElement.innerHTML = `
         <div class="flex items-center space-x-3">

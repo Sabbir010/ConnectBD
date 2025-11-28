@@ -1,0 +1,25 @@
+<div class="glass-card p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-700">Data Cleanup Tool</h2>
+        <button class="back-to-staff-panel text-violet-600 font-semibold hover:underline">&larr; Back to Staff Panel</button>
+    </div>
+
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">
+        <h3 class="font-bold">WARNING!</h3>
+        <p>These actions are irreversible and will permanently delete data from the database. Please be absolutely sure before proceeding.</p>
+    </div>
+
+    <div id="data-cleanup-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button class="data-cleanup-btn" data-type="notifications">Delete All Notifications</button>
+        <button class="data-cleanup-btn" data-type="inboxes">Delete All Inboxes</button>
+        <button class="data-cleanup-btn" data-type="unread_inboxes">Delete Unread Inboxes</button>
+        <button class="data-cleanup-btn" data-type="modlog">Clear All Moderator Logs</button>
+        <button class="data-cleanup-btn" data-type="shouts">Delete All Shouts</button>
+    </div>
+</div>
+
+<style>
+    .data-cleanup-btn {
+        @apply w-full p-4 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 transition-colors;
+    }
+</style>
