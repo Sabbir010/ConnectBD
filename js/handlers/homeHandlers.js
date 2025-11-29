@@ -16,12 +16,11 @@ export const fetchData_home = {
             // ১. হেডার (ওয়েলকাম মেসেজ + ঘড়ি)
             renderHomeHeader(currentUser, data.server_time);
             
-            // ২. সাইট স্ট্যাটিস্টিকস (Newest member সহ)
-            renderHomeStats(data.site_stats); // আগে data.site_stats ছিল না, এখন users.php আপডেট করায় এটা আসবে
-            
+            // ২. সাইট স্ট্যাটিস্টিকস
             // যদি api তে site_stats আলাদা অবজেক্ট না থাকে, তবে data.stats ব্যবহার করুন
-            if(!data.site_stats && data.stats) {
-                 renderHomeStats(data.stats);
+            const statsData = data.site_stats || data.stats;
+            if (statsData) {
+                renderHomeStats(statsData);
             }
 
             // ৩. লেটেস্ট সাউট
@@ -31,6 +30,12 @@ export const fetchData_home = {
             renderQuizButtonCounts(data.quiz_counts);
             renderQuizAnnouncement(data.quiz_announcement);
             renderHomePermissions(currentUser);
+
+            // ৫. স্টোরি লোড করা (নতুন ফিচার)
+            // storyUI.js ফাইলটি index.html এ থাকলে এই ফাংশনটি গ্লোবালি পাওয়া যাবে
+            if (typeof window.loadStories === 'function') {
+                window.loadStories();
+            }
         }
     }
 };

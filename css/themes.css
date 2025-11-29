@@ -273,3 +273,15 @@ a.user-name-link.special-user-name, .special-user-name {
     font-weight: bold !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4) !important;
 }
+
+
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+.animate-progress {
+    animation: progress 5s linear;
+}
+.text-shadow {
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}

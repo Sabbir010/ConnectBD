@@ -12,6 +12,8 @@ import {
 import { fetchData_shouts } from '/js/handlers/shoutHandlers.js';
 import { fetchData_topics } from '/js/handlers/topicHandlers.js';
 import { fetchData_archives } from '/js/handlers/archiveHandlers.js';
+// Username Shop এর ডাটা ফেচ করার জন্য ইমপোর্ট
+import { fetchData_usernameShop } from '/js/handlers/usernameShopHandlers.js';
 
 const DEFAULT_AVATAR_URL = 'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
 
@@ -172,6 +174,14 @@ export async function handleUserClicks(target, currentUser) {
         }
         return true;
     }
+
+    // --- Username Shop বাটন হ্যান্ডলার (নতুন যোগ করা হয়েছে) ---
+    if (target.id === 'username-shop-btn') {
+        await showView('username_shop');
+        await fetchData_usernameShop.info();
+        return true;
+    }
+    // -----------------------------------------------------
 
     const backToProfileBtn = target.closest('.back-to-profile');
     if(backToProfileBtn){

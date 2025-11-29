@@ -1,4 +1,4 @@
-// js/ui/userUI.js
+// ConnectBD/js/ui/userUI.js
 import { escapeHTML, DEFAULT_AVATAR_URL, generateUserDisplay } from './coreUI.js';
 import { formatSeconds, formatSessionTime, calculateAge, linkify, formatIdleTime } from './helpers.js';
 import { renderShout } from './shoutUI.js';
@@ -335,7 +335,10 @@ export function renderUserProfile(user, currentUser) {
 
             <div class="mt-8 flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
                 <button id="view-gifts-btn" data-user-id="${user.id}" class="w-full md:w-auto flex-1 bg-pink-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-pink-700"><i class="fas fa-gift mr-2"></i> View Gifts</button>
-                ${isOwnProfile ? `<button id="go-to-edit-profile" class="w-full md:w-auto flex-1 bg-indigo-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-indigo-700">Edit Profile</button>` : ''}
+                ${isOwnProfile ? `
+                    <button id="go-to-edit-profile" class="w-full md:w-auto flex-1 bg-indigo-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-indigo-700">Edit Profile</button>
+                    <button id="username-shop-btn" class="w-full md:w-auto flex-1 bg-teal-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-teal-700">Username Shop</button>
+                ` : ''}
                 <button id="go-to-advance-profile" data-user-id="${user.id}" class="w-full md:w-auto flex-1 bg-gray-700 text-white font-semibold py-2 px-6 rounded-md hover:bg-gray-800">Advance Profile</button>
             </div>
 

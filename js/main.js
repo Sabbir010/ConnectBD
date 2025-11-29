@@ -27,6 +27,8 @@ import { fetchData_reports } from './handlers/reportHandlers.js';
 import { fetchData_quizzes } from './handlers/quizHandlers.js';
 import { fetchData_themes } from './handlers/themeHandlers.js';
 import { fetchData_home } from './handlers/homeHandlers.js'; 
+// Username Shop ইমপোর্ট
+import { fetchData_usernameShop } from './handlers/usernameShopHandlers.js';
 
 let currentUser = null;
 
@@ -206,6 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'profile_themes':
                 fetchData_themes.shop('profile');
                 break;
+            // --- Username Shop Route ---
+            case 'username_shop':
+                fetchData_usernameShop.info();
+                break;
+            // ---------------------------
             case 'redeem_code':
                 break;
             case 'theme_promo_generator':

@@ -27,35 +27,25 @@
         #auth-container, #app-container {
             display: none;
         }
-        /* প্রিমিয়াম ইউজারনেম-এর জন্য গ্লোবাল স্টাইল */
         .premium-username {
-            color: #8B5CF6 !important; /* বেগুনি রঙ */
+            color: #8B5CF6 !important;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-        /* BBCode লিংকের জন্য নতুন স্টাইল */
         .bbcode-link, .bbcode-tag {
-            color: #8B5CF6; /* বেগুনি রঙ */
+            color: #8B5CF6;
             font-weight: bold;
             text-decoration: none;
         }
         .bbcode-link:hover, .bbcode-tag:hover {
             text-decoration: underline;
         }
-        
-        /* মেসেজ বক্সের লেখার রঙ ঠিক করা হয়েছে */
         .glass-card textarea, .glass-card input[type="text"], .glass-card input[type="email"], .glass-card input[type="password"], .glass-card input[type="number"] {
-            color: #1f2937; /* গাঢ় ধূসর রঙ */
+            color: #1f2937;
         }
         .dark-theme-placeholder ::placeholder {
             color: #a0aec0 !important;
             opacity: 1;
-        }
-        .blue-tick-icon {
-            color: #0ea5e9; /* sky-500 color */
-            font-size: 0.8em;
-            vertical-align: middle;
-            margin-left: 4px;
         }
     </style>
 </head>
@@ -123,9 +113,58 @@
         <main class="max-w-4xl mx-auto py-6 px-4">
             <div id="center-panel" class="w-full space-y-6"></div>
         </main>
-    </div>
+
+        <div id="create-story-modal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 relative">
+                <h3 class="font-bold text-xl mb-4">Create Story</h3>
+                <button onclick="closeCreateStoryModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                
+                <form id="story-form">
+                    <input type="hidden" name="action" value="post_story">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Type</label>
+                        <select name="type" id="story-type" class="w-full p-2 border rounded" onchange="toggleStoryInputs()">
+                            <option value="text">Text Status</option>
+                            <option value="image">Image Photo</option>
+                        </select>
+                    </div>
+
+                    <div id="text-input-group" class="mb-4">
+                        <textarea name="text_content" class="w-full p-3 border rounded h-32" placeholder="Type your status..."></textarea>
+                        <input type="color" name="background_color" value="#000000" class="w-full mt-2 h-10 cursor-pointer">
+                        <p class="text-xs text-gray-500">Pick background color</p>
+                    </div>
+
+                    <div id="image-input-group" class="mb-4 hidden">
+                        <input type="file" name="image" accept="image/*" class="w-full">
+                    </div>
+
+                    <button type="submit" class="w-full bg-violet-600 text-white py-2 rounded-lg font-bold hover:bg-violet-700">Share Story</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="story-viewer-modal" class="fixed inset-0 bg-black z-50 hidden flex flex-col items-center justify-center">
+            <div class="absolute top-4 right-4 flex space-x-4 z-50">
+                <button onclick="closeStoryViewer()" class="text-white text-3xl opacity-80 hover:opacity-100">&times;</button>
+            </div>
+            
+            <div id="story-content-area" class="w-full max-w-md h-full relative flex items-center justify-center bg-gray-900">
+                <div id="story-progress-container" class="absolute top-2 left-2 right-2 flex space-x-1 z-10"></div>
+                
+                <div class="absolute top-6 left-4 flex items-center z-10">
+                    <img id="viewer-user-img" src="" class="w-10 h-10 rounded-full border-2 border-white">
+                    <span id="viewer-user-name" class="ml-2 text-white font-bold text-shadow"></span>
+                </div>
+
+                <div id="story-display" class="w-full h-full flex items-center justify-center text-center p-4"></div>
+            </div>
+        </div>
+        </div>
     
     <script type="module" src="/js/main.js"></script> 
+    <script src="js/ui/storyUI.js"></script>
 
 </body>
 </html>

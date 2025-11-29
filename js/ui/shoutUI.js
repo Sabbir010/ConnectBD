@@ -9,7 +9,15 @@ export async function renderShout(shout, currentUser) {
     shoutElement.id = `shout-${shout.id}`;
     const avatar = shout.photo_url || DEFAULT_AVATAR_URL;
     
-    const shoutContent = await linkify(shout.text, currentUser, { type: 'shout', id: shout.id });
+    // Parse normal links
+    let shoutContent = await linkify(shout.text, currentUser, { type: 'shout', id: shout.id });
+
+    // --- NEW: Parse Story Links ---
+    shoutContent = shoutContent.replace(/\[story:(\d+)\]/g, (match, storyId) => {
+        return `<a href="#" onclick="openStoryFromShout(${storyId}); return false;" class="text-blue-600 font-bold hover:underline ml-1"><i class="fas fa-eye"></i> View Story</a>`;
+    });
+    // -----------------------------
+
     const userDisplay = generateUserDisplay(shout);
 
     const reactions = shout.reactions || {};

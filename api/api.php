@@ -36,6 +36,9 @@ set_time_limit(0);
 // Username capitalization expiry check
 $conn->query("UPDATE users SET capitalized_username = NULL, capitalization_expires_at = NULL WHERE capitalization_expires_at IS NOT NULL AND capitalization_expires_at < NOW()");
 
+// Delete expired stories (older than 24 hours)
+$conn->query("DELETE FROM stories WHERE expires_at < NOW()");
+
 
 // --- STEP 3: GET ACTION & CURRENT USER ---
 $action = $_POST['action'] ?? $_GET['action'] ?? null;
@@ -96,6 +99,9 @@ $cricket_actions = [
 $dashboard_actions = ['get_dashboard_stats'];
 $username_shop_actions = ['get_username_shop_info', 'change_username', 'change_username_color'];
 
+// *** এখানে নতুন অ্যাকশনগুলো (view_story, like_story, ইত্যাদি) যোগ করা হয়েছে ***
+$story_actions = ['post_story', 'get_stories', 'delete_story', 'view_story', 'like_story', 'comment_story', 'share_story']; 
+
 if (in_array($action, $auth_actions)) { require_once 'features/auth.php'; }
 elseif (in_array($action, $shout_actions)) { require_once 'features/shouts.php'; }
 elseif (in_array($action, $user_actions)) { require_once 'features/users.php'; }
@@ -123,6 +129,7 @@ elseif (in_array($action, $bbcode_actions)) { require_once 'features/bbcode.php'
 elseif (in_array($action, $cricket_actions)) { require_once 'features/cricket.php'; }
 elseif (in_array($action, $dashboard_actions)) { require_once 'features/dashboard.php'; }
 elseif (in_array($action, $username_shop_actions)) { require_once 'features/username_shop.php'; }
+elseif (in_array($action, $story_actions)) { require_once 'features/stories.php'; } // Route for Stories
 else { $response['message'] = "Unknown action: {$action}"; }
 
 // --- STEP 6: FINAL OUTPUT ---
